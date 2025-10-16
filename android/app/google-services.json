@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1046596716413",
+    "project_id": "coupledietfitness",
+    "storage_bucket": "coupledietfitness.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046596716413:android:4cc467805f7f3cfaa22e14",
+        "android_client_info": {
+          "package_name": "com.example.couple_diet_fitness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3K0JBa9WvxQgdCGDAz65CKhnKK4SiOlY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
