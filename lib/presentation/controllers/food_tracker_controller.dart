@@ -168,14 +168,20 @@ class FoodTrackerController extends GetxController {
       quantity: quantity,
       notes: notes,
       fineSettings: fineSettings,
+      existingEntries: _foodEntries, // Pass existing entries to check weekly limits
     );
     
     _foodEntries.add(entry);
     _generateWeeklySummaries();
     await _saveData();
     
-    // Sync with accountability controller
-    _syncWithAccountability();
+    // Create accountability entries for this food entry
+    try {
+      final accountabilityController = Get.find<AccountabilityController>();
+      await accountabilityController.createAccountabilityEntriesFromFoodEntry(entry);
+    } catch (e) {
+      print('Accountability controller not found: $e');
+    }
     
     // Show success message
     Get.snackbar(
@@ -285,12 +291,9 @@ class FoodTrackerController extends GetxController {
   
   // Sync with accountability controller
   void _syncWithAccountability() {
-    try {
-      final accountabilityController = Get.find<AccountabilityController>();
-      accountabilityController.addFromFoodEntries(_foodEntries);
-    } catch (e) {
-      print('Accountability controller not found: $e');
-    }
+    // This method is no longer needed as accountability entries are created directly
+    // when food entries are added via createAccountabilityEntriesFromFoodEntry
+    print('ℹ️ _syncWithAccountability called - this is now handled directly in addFoodEntry');
   }
   
   // Check weekly limits for a person

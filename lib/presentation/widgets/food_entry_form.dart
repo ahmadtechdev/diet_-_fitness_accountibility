@@ -95,7 +95,6 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
                     const SizedBox(height: 24),
                     _buildNotesField(),
                     const SizedBox(height: 24),
-                    _buildWeeklyLimitWarning(),
                     const SizedBox(height: 24),
                     _buildFinePreview(),
                     const SizedBox(height: 32),
@@ -414,119 +413,7 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
     );
   }
 
-  Widget _buildWeeklyLimitWarning() {
-    if (_selectedFoodType == AppConstants.clean) {
-      return const SizedBox.shrink();
-    }
-    
-    final quantity = double.tryParse(_quantityController.text) ?? 1.0;
-    final settingsController = Get.find<SettingsController>();
-    final fineSettings = settingsController.fineSettings
-        .where((setting) => setting.foodType == _selectedFoodType)
-        .firstOrNull;
-    
-    if (fineSettings == null) {
-      return const SizedBox.shrink();
-    }
-    
-    final weeklyLimit = _selectedWhoAte == AppConstants.him 
-        ? fineSettings.distributionRules.himWeeklyJunkMealLimit
-        : fineSettings.distributionRules.herWeeklyJunkMealLimit;
-    
-    // Get current week entries for this person and food type
-    final currentWeek = _getWeekNumber(DateTime.now());
-    final weekEntries = Get.find<FoodTrackerController>().foodEntries.where((entry) => 
-      entry.weekNumber == currentWeek && 
-      entry.whoAte == _selectedWhoAte && 
-      entry.foodType == _selectedFoodType
-    ).toList();
-    
-    final currentQuantity = weekEntries.fold(0.0, (sum, entry) => sum + entry.quantity);
-    final newTotal = currentQuantity + quantity;
-    final remaining = weeklyLimit - currentQuantity;
-    
-    if (newTotal > weeklyLimit) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.red.withOpacity(0.3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.warning, color: Colors.red, size: 20),
-                const SizedBox(width: 8),
-                const Text(
-                  'Weekly Limit Exceeded!',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${_selectedWhoAte} has already had $currentQuantity ${_selectedFoodType} meals this week (limit: $weeklyLimit). Adding $quantity more will exceed the limit!',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.red,
-              ),
-            ),
-          ],
-        ),
-      );
-    } else if (remaining <= 2 && remaining > 0) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.orange.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.orange.withOpacity(0.3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.info, color: Colors.orange, size: 20),
-                const SizedBox(width: 8),
-                const Text(
-                  'Weekly Limit Warning',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.orange,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${_selectedWhoAte} has $remaining ${_selectedFoodType} meals remaining this week (limit: $weeklyLimit).',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.orange,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    
-    return const SizedBox.shrink();
-  }
 
-  int _getWeekNumber(DateTime date) {
-    final firstDayOfYear = DateTime(date.year, 1, 1);
-    final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
-    return (daysSinceFirstDay / 7).floor() + 1;
-  }
 
   Widget _buildFinePreview() {
     final quantity = double.tryParse(_quantityController.text) ?? 1.0;
@@ -545,12 +432,16 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
   }
 
   Widget _buildSettingsBasedFinePreview(double quantity, fineSettings) {
+    // Get existing food entries to check weekly limits
+    final existingEntries = Get.find<FoodTrackerController>().foodEntries;
+    
     // Create distributed fines
     final distributedFines = ExerciseFine.createDistributedFines(
       _selectedFoodType,
       quantity,
       _selectedWhoAte,
       fineSettings,
+      existingEntries: existingEntries,
     );
 
     if (_selectedWhoAte == AppConstants.both) {

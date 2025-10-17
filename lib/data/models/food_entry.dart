@@ -36,13 +36,15 @@ class FoodEntry extends Equatable {
     required double quantity,
     String notes = '',
     FineSettings? fineSettings,
+    List<FoodEntry>? existingEntries, // Add existing entries to check weekly limits
   }) {
-    final weekNumber = _getWeekNumber(date);
+    final weekNumber = 1; // Not used anymore since we removed weekly limits
     final fine = ExerciseFine.calculateFromFineSettings(
       foodType, 
       quantity, 
       whoAte, 
-      fineSettings
+      fineSettings,
+      existingEntries: existingEntries,
     );
     final status = _getStatus(foodType);
     
@@ -60,12 +62,6 @@ class FoodEntry extends Equatable {
     );
   }
 
-  static int _getWeekNumber(DateTime date) {
-    // Get the week number of the year
-    final firstDayOfYear = DateTime(date.year, 1, 1);
-    final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
-    return (daysSinceFirstDay / 7).floor() + 1;
-  }
 
   static String _getStatus(String foodType) {
     switch (foodType) {
@@ -165,6 +161,13 @@ class ExerciseFine extends Equatable {
     required this.pushups,
   });
 
+  // Helper method to get week number
+  static int _getWeekNumber(DateTime date) {
+    final firstDayOfYear = DateTime(date.year, 1, 1);
+    final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
+    return (daysSinceFirstDay / 7).floor() + 1;
+  }
+
   // Legacy method for backward compatibility
   factory ExerciseFine.calculate(String foodType, double quantity, String whoAte) {
     final baseFine = AppConstants.fineStructure[foodType] ?? {
@@ -192,12 +195,29 @@ class ExerciseFine extends Equatable {
     String foodType, 
     double quantity, 
     String whoAte, 
-    FineSettings? fineSettings
+    FineSettings? fineSettings,
+    {List<FoodEntry>? existingEntries} // Add existing entries to check weekly limits
   ) {
     // If no fine settings provided, fall back to legacy calculation
     if (fineSettings == null) {
       return ExerciseFine.calculate(foodType, quantity, whoAte);
     }
+
+    // Skip fine calculation for clean food - we only track junk food fines
+    if (foodType == AppConstants.clean) {
+      return const ExerciseFine(
+        jumpingRopes: 0,
+        squats: 0,
+        jumpingJacks: 0,
+        highKnees: 0,
+        pushups: 0,
+      );
+    }
+
+    print('🔍 ULTRA SIMPLIFIED Individual Fine Calculation:');
+    print('   Person: $whoAte');
+    print('   Food Type: $foodType');
+    print('   ⚠️ FINES APPLIED - No limits, always apply fines for junk food');
 
     // Determine which fine set to use based on who ate
     FineSet? selectedFineSet;
@@ -211,7 +231,7 @@ class ExerciseFine extends Equatable {
       selectedFineSet = fineSettings.himFineSet; // Use him's fine set as base
     } else if (whoAte == AppConstants.him || whoAte == AppConstants.ahmad) {
       // Him ate - check if more than once this week
-      // For now, assume it's more than once (you can add week tracking logic later)
+      // Now properly check if it's more than once using existing entries
       himPercentage = fineSettings.distributionRules.himEatsMoreThanOnceHimPercentage / 100.0;
       herPercentage = fineSettings.distributionRules.himEatsMoreThanOnceHerPercentage / 100.0;
       selectedFineSet = fineSettings.himFineSet;
@@ -284,14 +304,30 @@ class ExerciseFine extends Equatable {
     );
   }
 
-  // Method to create distributed fines for Him and Her
+  // ULTRA SIMPLIFIED: Just distribute fines based on who ate - NO LIMITS!
   static Map<String, ExerciseFine> createDistributedFines(
     String foodType,
     double quantity,
     String whoAte,
     FineSettings? fineSettings,
+    {List<FoodEntry>? existingEntries}
   ) {
+    print('🔍 ULTRA SIMPLIFIED Fine Calculation:');
+    print('   Who Ate: $whoAte');
+    print('   Food Type: $foodType');
+    print('   Quantity: $quantity');
+
+    // Skip clean food
+    if (foodType == AppConstants.clean) {
+      print('   ✅ NO FINES - Clean food');
+      return {
+        'him': const ExerciseFine(jumpingRopes: 0, squats: 0, jumpingJacks: 0, highKnees: 0, pushups: 0),
+        'her': const ExerciseFine(jumpingRopes: 0, squats: 0, jumpingJacks: 0, highKnees: 0, pushups: 0),
+      };
+    }
+
     if (fineSettings == null) {
+      print('   ⚠️ NO FINE SETTINGS - Using legacy calculation');
       final baseFine = ExerciseFine.calculate(foodType, quantity, whoAte);
       return {
         'him': baseFine,
@@ -299,31 +335,20 @@ class ExerciseFine extends Equatable {
       };
     }
 
-    // Determine which fine set to use based on who ate
-    FineSet? selectedFineSet;
-    double himPercentage = 0.0;
-    double herPercentage = 0.0;
+    print('   ⚠️ FINES APPLIED - No limits, always apply fines for junk food');
 
-    if (whoAte == AppConstants.both) {
-      // Both ate - 50/50 split
-      himPercentage = fineSettings.distributionRules.bothEatPercentage / 100.0;
-      herPercentage = fineSettings.distributionRules.bothEatPercentage / 100.0;
-      selectedFineSet = fineSettings.himFineSet; // Use him's fine set as base
-    } else if (whoAte == AppConstants.him || whoAte == AppConstants.ahmad) {
-      // Him ate - check if more than once this week
-      // For now, assume it's more than once (you can add week tracking logic later)
-      himPercentage = fineSettings.distributionRules.himEatsMoreThanOnceHimPercentage / 100.0;
-      herPercentage = fineSettings.distributionRules.himEatsMoreThanOnceHerPercentage / 100.0;
-      selectedFineSet = fineSettings.himFineSet;
+    // Get the base fine set
+    FineSet? baseFineSet;
+    if (whoAte == AppConstants.him || whoAte == AppConstants.ahmad) {
+      baseFineSet = fineSettings.himFineSet;
     } else if (whoAte == AppConstants.her) {
-      // Her ate
-      himPercentage = fineSettings.distributionRules.herEatsHimPercentage / 100.0;
-      herPercentage = fineSettings.distributionRules.herEatsHerPercentage / 100.0;
-      selectedFineSet = fineSettings.herFineSet;
+      baseFineSet = fineSettings.herFineSet;
+    } else if (whoAte == AppConstants.both) {
+      baseFineSet = fineSettings.himFineSet; // Use him's as base for both
     }
 
-    // If no fine set is configured, return zero fines
-    if (selectedFineSet == null || selectedFineSet.exercises.isEmpty) {
+    if (baseFineSet == null || baseFineSet.exercises.isEmpty) {
+      print('   ⚠️ NO FINE SET CONFIGURED');
       return {
         'him': const ExerciseFine(jumpingRopes: 0, squats: 0, jumpingJacks: 0, highKnees: 0, pushups: 0),
         'her': const ExerciseFine(jumpingRopes: 0, squats: 0, jumpingJacks: 0, highKnees: 0, pushups: 0),
@@ -337,7 +362,7 @@ class ExerciseFine extends Equatable {
     int baseHighKnees = 0;
     int basePushups = 0;
 
-    for (final exercise in selectedFineSet.exercises) {
+    for (final exercise in baseFineSet.exercises) {
       final finalQuantity = (exercise.quantity * quantity).round();
       
       switch (exercise.exerciseId.toLowerCase()) {
@@ -364,7 +389,27 @@ class ExerciseFine extends Equatable {
       }
     }
 
-    // Distribute exercises according to percentages
+    // Apply distribution rules
+    double himPercentage = 0.0;
+    double herPercentage = 0.0;
+
+    if (whoAte == AppConstants.him || whoAte == AppConstants.ahmad) {
+      // Him ate - use his distribution rules
+      himPercentage = fineSettings.distributionRules.himEatsMoreThanOnceHimPercentage / 100.0;
+      herPercentage = fineSettings.distributionRules.himEatsMoreThanOnceHerPercentage / 100.0;
+    } else if (whoAte == AppConstants.her) {
+      // Her ate - use her distribution rules
+      himPercentage = fineSettings.distributionRules.herEatsHimPercentage / 100.0;
+      herPercentage = fineSettings.distributionRules.herEatsHerPercentage / 100.0;
+    } else if (whoAte == AppConstants.both) {
+      // Both ate - use both distribution rules
+      himPercentage = fineSettings.distributionRules.bothEatPercentage / 100.0;
+      herPercentage = fineSettings.distributionRules.bothEatPercentage / 100.0;
+    }
+
+    print('   Distribution: Him ${(himPercentage * 100).toInt()}%, Her ${(herPercentage * 100).toInt()}%');
+
+    // Create distributed fines
     final himFine = ExerciseFine(
       jumpingRopes: (baseJumpingRopes * himPercentage).round(),
       squats: (baseSquats * himPercentage).round(),
@@ -380,6 +425,8 @@ class ExerciseFine extends Equatable {
       highKnees: (baseHighKnees * herPercentage).round(),
       pushups: (basePushups * herPercentage).round(),
     );
+
+    print('   Final Fines: Him ${himFine.totalExercises}, Her ${herFine.totalExercises}');
 
     return {
       'him': himFine,

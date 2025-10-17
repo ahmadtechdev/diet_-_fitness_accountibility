@@ -5,6 +5,7 @@ import '../../data/models/accountability_entry.dart';
 import '../../data/models/food_entry.dart';
 import '../../data/models/fine_settings.dart';
 import '../../core/constants/app_constants.dart';
+import 'food_tracker_controller.dart';
 import 'settings_controller.dart';
 
 class AccountabilityController extends GetxController {
@@ -93,10 +94,20 @@ class AccountabilityController extends GetxController {
       final settingsController = Get.find<SettingsController>();
       final fineSettings = settingsController.getFineSettingsForFoodType(foodEntry.foodType);
       
+      // Get food entries from FoodTrackerController to check weekly limits
+      List<FoodEntry> existingFoodEntries = [];
+      try {
+        final foodController = Get.find<FoodTrackerController>();
+        existingFoodEntries = foodController.foodEntries;
+      } catch (e) {
+        print('FoodTrackerController not found: $e');
+      }
+      
       // Create accountability entries using the new system
       final accountabilityEntries = AccountabilityEntry.createFromFoodEntryWithFineSettings(
         foodEntry: foodEntry,
         fineSettings: fineSettings,
+        existingEntries: existingFoodEntries,
       );
       
       // Add to lists
@@ -151,115 +162,30 @@ class AccountabilityController extends GetxController {
     }
   }
 
-  // Add accountability entries from food entries
+  // Add accountability entries from food entries (DEPRECATED - use createAccountabilityEntriesFromFoodEntry instead)
   Future<void> addFromFoodEntries(List<FoodEntry> foodEntries) async {
-    for (final foodEntry in foodEntries) {
-      // Get fine settings for this food type
-      FineSettings? fineSettings;
-      try {
-        final settingsController = Get.find<SettingsController>();
-        fineSettings = settingsController.fineSettings
-            .where((setting) => setting.foodType == foodEntry.foodType)
-            .firstOrNull;
-      } catch (e) {
-        print('Settings controller not found: $e');
-      }
-
-      // Create distributed fines
-      final distributedFines = ExerciseFine.createDistributedFines(
-        foodEntry.foodType,
-        foodEntry.quantity,
-        foodEntry.whoAte,
-        fineSettings,
-      );
-
-      // Create accountability entries based on who ate and distributed fines
-      if (foodEntry.whoAte == AppConstants.both) {
-        // Create entries for both Him and Her with distributed fines
-        final himEntry = AccountabilityEntry.fromFoodEntry(
-          foodEntryId: foodEntry.id,
-          date: foodEntry.date,
-          whoAte: AppConstants.him,
-          foodType: foodEntry.foodType,
-          foodName: foodEntry.foodName,
-          quantity: foodEntry.quantity,
-          fine: distributedFines['him']!,
-          status: foodEntry.status,
-          notes: foodEntry.notes,
-          weekNumber: foodEntry.weekNumber,
-        );
-        
-        final herEntry = AccountabilityEntry.fromFoodEntry(
-          foodEntryId: foodEntry.id,
-          date: foodEntry.date,
-          whoAte: AppConstants.her,
-          foodType: foodEntry.foodType,
-          foodName: foodEntry.foodName,
-          quantity: foodEntry.quantity,
-          fine: distributedFines['her']!,
-          status: foodEntry.status,
-          notes: foodEntry.notes,
-          weekNumber: foodEntry.weekNumber,
-        );
-        
-        _addOrUpdateEntry(himEntry);
-        _addOrUpdateEntry(herEntry);
-      } else {
-        // Create entry for the person who ate with their portion of the fine
-        final personFine = foodEntry.whoAte == AppConstants.him 
-            ? distributedFines['him']! 
-            : distributedFines['her']!;
-            
-        final entry = AccountabilityEntry.fromFoodEntry(
-          foodEntryId: foodEntry.id,
-          date: foodEntry.date,
-          whoAte: foodEntry.whoAte,
-          foodType: foodEntry.foodType,
-          foodName: foodEntry.foodName,
-          quantity: foodEntry.quantity,
-          fine: personFine,
-          status: foodEntry.status,
-          notes: foodEntry.notes,
-          weekNumber: foodEntry.weekNumber,
-        );
-        
-        _addOrUpdateEntry(entry);
-
-        // If the other person also gets a portion of the fine, create an entry for them
-        final otherPersonFine = foodEntry.whoAte == AppConstants.him 
-            ? distributedFines['her']! 
-            : distributedFines['him']!;
-            
-        if (otherPersonFine.totalExercises > 0) {
-          final otherPersonEntry = AccountabilityEntry.fromFoodEntry(
-            foodEntryId: foodEntry.id,
-            date: foodEntry.date,
-            whoAte: foodEntry.whoAte == AppConstants.him ? AppConstants.her : AppConstants.him,
-            foodType: foodEntry.foodType,
-            foodName: foodEntry.foodName,
-            quantity: foodEntry.quantity,
-            fine: otherPersonFine,
-            status: foodEntry.status,
-            notes: foodEntry.notes,
-            weekNumber: foodEntry.weekNumber,
-          );
-          
-          _addOrUpdateEntry(otherPersonEntry);
-        }
-      }
-    }
-    
-    await _saveAccountabilityEntries();
-    _updateFilteredLists();
+    print('⚠️ DEPRECATED: addFromFoodEntries called - this should not happen!');
+    print('   Use createAccountabilityEntriesFromFoodEntry instead');
+    // This method is deprecated and should not be used
+    // The new system uses createAccountabilityEntriesFromFoodEntry
   }
 
   // Add or update an accountability entry
   void _addOrUpdateEntry(AccountabilityEntry entry) {
+    print('🔍 Adding Accountability Entry:');
+    print('   Entry ID: ${entry.id}');
+    print('   Who Ate: ${entry.whoAte}');
+    print('   Food Type: ${entry.foodType}');
+    print('   Fine Total: ${entry.fine.totalExercises}');
+    print('   Fine Details: ${entry.fine.description}');
+    
     final existingIndex = _accountabilityEntries.indexWhere((e) => e.id == entry.id);
     if (existingIndex != -1) {
       _accountabilityEntries[existingIndex] = entry;
+      print('   ✅ Updated existing entry');
     } else {
       _accountabilityEntries.add(entry);
+      print('   ✅ Added new entry');
     }
   }
 
@@ -285,6 +211,17 @@ class AccountabilityController extends GetxController {
       await _saveAccountabilityEntries();
       _updateFilteredLists();
     }
+  }
+
+  // Clear all accountability entries (for testing)
+  Future<void> clearAllEntries() async {
+    print('🧹 Clearing all accountability entries...');
+    _accountabilityEntries.clear();
+    _pendingEntries.clear();
+    _completedEntries.clear();
+    await _saveAccountabilityEntries();
+    _updateFilteredLists();
+    print('✅ All accountability entries cleared');
   }
 
   // Set filter
@@ -320,11 +257,4 @@ class AccountabilityController extends GetxController {
     ).toList();
   }
 
-  // Clear all entries (for testing)
-  Future<void> clearAllEntries() async {
-    _accountabilityEntries.clear();
-    _pendingEntries.clear();
-    _completedEntries.clear();
-    await _saveAccountabilityEntries();
-  }
 }

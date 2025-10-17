@@ -28,6 +28,40 @@ class AccountabilityView extends StatelessWidget {
         ),
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.primaryPink),
+        actions: [
+          // Debug button to clear all entries
+          IconButton(
+            icon: const Icon(Icons.clear_all, color: AppColors.primaryPink),
+            onPressed: () {
+              Get.dialog(
+                AlertDialog(
+                  title: const Text('Clear All Entries'),
+                  content: const Text('This will clear all accountability entries. Are you sure?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        controller.clearAllEntries();
+                        Get.back();
+                        Get.snackbar(
+                          'Cleared!',
+                          'All accountability entries have been cleared',
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: AppColors.primaryPink,
+                          colorText: AppColors.textOnPrimary,
+                        );
+                      },
+                      child: const Text('Clear'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Obx(() {
         if (controller.isLoading) {

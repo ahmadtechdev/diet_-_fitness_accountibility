@@ -333,4 +333,98 @@ class SettingsController extends GetxController {
     _initializeDefaultData();
     await saveSettings();
   }
+
+  // Reward Meal Management
+  void addRewardMeal(String person) {
+    for (final fineSetting in _fineSettings) {
+      final currentRules = fineSetting.distributionRules;
+      final newRules = person == AppConstants.him
+          ? currentRules.copyWith(himCurrentRewardMeals: currentRules.himCurrentRewardMeals + 1)
+          : currentRules.copyWith(herCurrentRewardMeals: currentRules.herCurrentRewardMeals + 1);
+      
+      final updatedFineSetting = FineSettings(
+        id: fineSetting.id,
+        foodType: fineSetting.foodType,
+        foodTypeEmoji: fineSetting.foodTypeEmoji,
+        himFineSet: fineSetting.himFineSet,
+        herFineSet: fineSetting.herFineSet,
+        distributionRules: newRules,
+        createdAt: fineSetting.createdAt,
+        updatedAt: DateTime.now(),
+      );
+      
+      final index = _fineSettings.indexWhere((fs) => fs.id == fineSetting.id);
+      if (index != -1) {
+        _fineSettings[index] = updatedFineSetting;
+      }
+    }
+    saveSettings();
+  }
+
+  void removeRewardMeal(String person) {
+    for (final fineSetting in _fineSettings) {
+      final currentRules = fineSetting.distributionRules;
+      final currentRewardMeals = person == AppConstants.him 
+          ? currentRules.himCurrentRewardMeals 
+          : currentRules.herCurrentRewardMeals;
+      
+      if (currentRewardMeals > 0) {
+        final newRules = person == AppConstants.him
+            ? currentRules.copyWith(himCurrentRewardMeals: currentRewardMeals - 1)
+            : currentRules.copyWith(herCurrentRewardMeals: currentRewardMeals - 1);
+        
+        final updatedFineSetting = FineSettings(
+          id: fineSetting.id,
+          foodType: fineSetting.foodType,
+          foodTypeEmoji: fineSetting.foodTypeEmoji,
+          himFineSet: fineSetting.himFineSet,
+          herFineSet: fineSetting.herFineSet,
+          distributionRules: newRules,
+          createdAt: fineSetting.createdAt,
+          updatedAt: DateTime.now(),
+        );
+        
+        final index = _fineSettings.indexWhere((fs) => fs.id == fineSetting.id);
+        if (index != -1) {
+          _fineSettings[index] = updatedFineSetting;
+        }
+      }
+    }
+    saveSettings();
+  }
+
+  int getRewardMeals(String person) {
+    if (_fineSettings.isEmpty) return 0;
+    
+    final firstFineSetting = _fineSettings.first;
+    return person == AppConstants.him 
+        ? firstFineSetting.distributionRules.himCurrentRewardMeals
+        : firstFineSetting.distributionRules.herCurrentRewardMeals;
+  }
+
+  void setRewardMeals(String person, int count) {
+    for (final fineSetting in _fineSettings) {
+      final currentRules = fineSetting.distributionRules;
+      final newRules = person == AppConstants.him
+          ? currentRules.copyWith(himCurrentRewardMeals: count)
+          : currentRules.copyWith(herCurrentRewardMeals: count);
+      
+      final updatedFineSetting = FineSettings(
+        id: fineSetting.id,
+        foodType: fineSetting.foodType,
+        foodTypeEmoji: fineSetting.foodTypeEmoji,
+        himFineSet: fineSetting.himFineSet,
+        herFineSet: fineSetting.herFineSet,
+        distributionRules: newRules,
+        createdAt: fineSetting.createdAt,
+        updatedAt: DateTime.now(),
+      );
+      
+      final index = _fineSettings.indexWhere((fs) => fs.id == fineSetting.id);
+      if (index != -1) {
+        _fineSettings[index] = updatedFineSetting;
+      }
+    }
+    saveSettings();
+  }
 }

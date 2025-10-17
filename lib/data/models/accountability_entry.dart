@@ -72,82 +72,113 @@ class AccountabilityEntry extends Equatable {
   static List<AccountabilityEntry> createFromFoodEntryWithFineSettings({
     required FoodEntry foodEntry,
     FineSettings? fineSettings,
+    List<FoodEntry>? existingEntries, // Add existing entries to check weekly limits
   }) {
     final List<AccountabilityEntry> entries = [];
     
+    // Use distributed fines to get proper sharing logic
+    final distributedFines = ExerciseFine.createDistributedFines(
+      foodEntry.foodType,
+      foodEntry.quantity,
+      foodEntry.whoAte,
+      fineSettings,
+      existingEntries: existingEntries,
+    );
+    
+    final himFine = distributedFines['him']!;
+    final herFine = distributedFines['her']!;
+    
+    print('🔍 Accountability Entry Creation Debug:');
+    print('   Who Ate: ${foodEntry.whoAte}');
+    print('   Him Fine Total: ${himFine.totalExercises}');
+    print('   Her Fine Total: ${herFine.totalExercises}');
+    
+    // Only create entries if there are actual fines to be applied
+    if (himFine.totalExercises == 0 && herFine.totalExercises == 0) {
+      print('   ✅ NO ACCOUNTABILITY ENTRIES - No fines to apply');
+      return entries;
+    }
+    
     if (foodEntry.whoAte == AppConstants.both) {
       // Create separate entries for both Him and Her
-      final himFine = ExerciseFine.calculateFromFineSettings(
-        foodEntry.foodType,
-        foodEntry.quantity,
-        AppConstants.him,
-        fineSettings,
-      );
+      if (himFine.totalExercises > 0) {
+        entries.add(AccountabilityEntry(
+          id: '${foodEntry.id}_him',
+          date: foodEntry.date,
+          whoAte: AppConstants.him,
+          foodType: foodEntry.foodType,
+          foodName: foodEntry.foodName,
+          quantity: foodEntry.quantity,
+          fine: himFine,
+          status: foodEntry.status,
+          notes: foodEntry.notes,
+          weekNumber: foodEntry.weekNumber,
+          isCompleted: false,
+          completedBy: '',
+          isFromPartner: false,
+        ));
+      }
       
-      final herFine = ExerciseFine.calculateFromFineSettings(
-        foodEntry.foodType,
-        foodEntry.quantity,
-        AppConstants.her,
-        fineSettings,
-      );
-      
-      // Him's entry
-      entries.add(AccountabilityEntry(
-        id: '${foodEntry.id}_him',
-        date: foodEntry.date,
-        whoAte: AppConstants.him,
-        foodType: foodEntry.foodType,
-        foodName: foodEntry.foodName,
-        quantity: foodEntry.quantity,
-        fine: himFine,
-        status: foodEntry.status,
-        notes: foodEntry.notes,
-        weekNumber: foodEntry.weekNumber,
-        isCompleted: false,
-        completedBy: '',
-        isFromPartner: false,
-      ));
-      
-      // Her's entry
-      entries.add(AccountabilityEntry(
-        id: '${foodEntry.id}_her',
-        date: foodEntry.date,
-        whoAte: AppConstants.her,
-        foodType: foodEntry.foodType,
-        foodName: foodEntry.foodName,
-        quantity: foodEntry.quantity,
-        fine: herFine,
-        status: foodEntry.status,
-        notes: foodEntry.notes,
-        weekNumber: foodEntry.weekNumber,
-        isCompleted: false,
-        completedBy: '',
-        isFromPartner: true,
-      ));
+      if (herFine.totalExercises > 0) {
+        entries.add(AccountabilityEntry(
+          id: '${foodEntry.id}_her',
+          date: foodEntry.date,
+          whoAte: AppConstants.her,
+          foodType: foodEntry.foodType,
+          foodName: foodEntry.foodName,
+          quantity: foodEntry.quantity,
+          fine: herFine,
+          status: foodEntry.status,
+          notes: foodEntry.notes,
+          weekNumber: foodEntry.weekNumber,
+          isCompleted: false,
+          completedBy: '',
+          isFromPartner: true,
+        ));
+      }
     } else {
-      // Single person entry
-      final fine = ExerciseFine.calculateFromFineSettings(
-        foodEntry.foodType,
-        foodEntry.quantity,
-        foodEntry.whoAte,
-        fineSettings,
-      );
+      // Single person entry - but still use distributed fines for sharing logic
+      final personFine = foodEntry.whoAte == AppConstants.him ? himFine : herFine;
+      final otherPersonFine = foodEntry.whoAte == AppConstants.him ? herFine : himFine;
       
-      entries.add(AccountabilityEntry(
-        id: '${foodEntry.id}_${foodEntry.whoAte}',
-        date: foodEntry.date,
-        whoAte: foodEntry.whoAte,
-        foodType: foodEntry.foodType,
-        foodName: foodEntry.foodName,
-        quantity: foodEntry.quantity,
-        fine: fine,
-        status: foodEntry.status,
-        notes: foodEntry.notes,
-        weekNumber: foodEntry.weekNumber,
-        isCompleted: false,
-        completedBy: '',
-        isFromPartner: foodEntry.whoAte == AppConstants.her,
-      ));
+      // Create entry for the person who ate
+      if (personFine.totalExercises > 0) {
+        entries.add(AccountabilityEntry(
+          id: '${foodEntry.id}_${foodEntry.whoAte}',
+          date: foodEntry.date,
+          whoAte: foodEntry.whoAte,
+          foodType: foodEntry.foodType,
+          foodName: foodEntry.foodName,
+          quantity: foodEntry.quantity,
+          fine: personFine,
+          status: foodEntry.status,
+          notes: foodEntry.notes,
+          weekNumber: foodEntry.weekNumber,
+          isCompleted: false,
+          completedBy: '',
+          isFromPartner: false,
+        ));
+      }
+      
+      // Create entry for the other person if they also get a portion of the fine
+      if (otherPersonFine.totalExercises > 0) {
+        final otherPerson = foodEntry.whoAte == AppConstants.him ? AppConstants.her : AppConstants.him;
+        entries.add(AccountabilityEntry(
+          id: '${foodEntry.id}_${otherPerson}',
+          date: foodEntry.date,
+          whoAte: otherPerson,
+          foodType: foodEntry.foodType,
+          foodName: foodEntry.foodName,
+          quantity: foodEntry.quantity,
+          fine: otherPersonFine,
+          status: foodEntry.status,
+          notes: foodEntry.notes,
+          weekNumber: foodEntry.weekNumber,
+          isCompleted: false,
+          completedBy: '',
+          isFromPartner: true,
+        ));
+      }
     }
     
     return entries;
