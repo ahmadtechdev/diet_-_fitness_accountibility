@@ -192,7 +192,7 @@ class AppDrawer extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             child: const Text(
-              'Made with 💕 for couples',
+              'Made with 💕 for Us',
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 12,

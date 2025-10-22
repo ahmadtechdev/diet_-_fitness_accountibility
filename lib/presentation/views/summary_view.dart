@@ -36,20 +36,20 @@ class _SummaryViewState extends State<SummaryView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
-            _buildTabBar(),
+            _buildHeader(context),
+            _buildTabBar(context),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildWeeklySummary(),
-                  _buildMonthlySummary(),
-                  _buildExerciseAnalytics(),
-                  _buildDistributionAnalytics(),
+                  _buildWeeklySummary(context),
+                  _buildMonthlySummary(context),
+                  _buildExerciseAnalytics(context),
+                  _buildDistributionAnalytics(context),
                 ],
               ),
             ),
@@ -59,15 +59,22 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
       decoration: BoxDecoration(
         gradient: AppGradients.romantic,
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,191 +83,285 @@ class _SummaryViewState extends State<SummaryView>
             children: [
               IconButton(
                 onPressed: () => Get.back(),
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Summary & Analytics',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: AppColors.textOnPrimary,
+                  size: 20,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.textOnPrimary.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.all(8),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Comprehensive insights into your fitness journey',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  '📊 Detailed Analytics',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  'Summary & Analytics',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.textOnPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 20),
+          Text(
+            'Comprehensive insights into your fitness journey',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.textOnPrimary.withOpacity(0.8),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.textOnPrimary.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.textOnPrimary.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.analytics_outlined,
+                  color: AppColors.textOnPrimary,
+                  size: 16,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Detailed Analytics',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: AppColors.textOnPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.surfaceLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: AppColors.primaryPink,
+          gradient: AppGradients.romantic,
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryPink.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.grey[600],
-        labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+        indicatorPadding: const EdgeInsets.all(4),
+        labelColor: AppColors.textOnPrimary,
+        unselectedLabelColor: AppColors.textSecondary,
+        labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+        unselectedLabelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w400,
+        ),
         isScrollable: true,
+        tabAlignment: TabAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         tabs: const [
-          Tab(text: 'Weekly'),
-          Tab(text: 'Monthly'),
-          Tab(text: 'Exercises'),
-          Tab(text: 'Distribution'),
+          Tab(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text('Weekly'),
+            ),
+          ),
+          Tab(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text('Monthly'),
+            ),
+          ),
+          Tab(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text('Exercises'),
+            ),
+          ),
+          Tab(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text('Distribution'),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildWeeklySummary() {
+  Widget _buildWeeklySummary(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildCurrentWeekCard(),
-          const SizedBox(height: 24),
-          _buildWeeklyTrendChart(),
-          const SizedBox(height: 24),
-          _buildWeeklyComparison(),
-          const SizedBox(height: 24),
-          _buildWeeklyHistory(),
+          _buildCurrentWeekCard(context),
+          const SizedBox(height: 20),
+          _buildWeeklyTrendChart(context),
+          const SizedBox(height: 20),
+          _buildWeeklyComparison(context),
+          const SizedBox(height: 20),
+          _buildWeeklyHistory(context),
         ],
       ),
     );
   }
 
-  Widget _buildCurrentWeekCard() {
+  Widget _buildCurrentWeekCard(BuildContext context) {
     final currentWeek = _foodController.currentWeekSummary;
     
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: AppGradients.romantic,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.textOnPrimary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.calendar_today,
+                    color: AppColors.textOnPrimary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'This Week Summary',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textOnPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            if (currentWeek != null) ...[
+              _buildWeekOverview(context, currentWeek),
+              const SizedBox(height: 24),
+              _buildPersonSummary(context, currentWeek.ahmadSummary, 'Him', '👨', AppColors.secondaryBlue),
+              const SizedBox(height: 16),
+              _buildPersonSummary(context, currentWeek.herSummary, 'Her', '👩', AppColors.primaryPink),
+            ] else
+              Container(
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: AppColors.textOnPrimary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.textOnPrimary.withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        size: 48,
+                        color: AppColors.textOnPrimary.withOpacity(0.7),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No data for this week yet',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppColors.textOnPrimary.withOpacity(0.8),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Start logging your food entries!',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textOnPrimary.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeekOverview(BuildContext context, summary) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: AppGradients.romantic,
+        color: AppColors.textOnPrimary.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryPink.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.calendar_today, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
-              const Text(
-                'This Week Summary',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          if (currentWeek != null) ...[
-            _buildWeekOverview(currentWeek),
-            const SizedBox(height: 20),
-            _buildPersonSummary(currentWeek.ahmadSummary, 'Him', '👨', Colors.blue),
-            const SizedBox(height: 12),
-            _buildPersonSummary(currentWeek.herSummary, 'Her', '👩', Colors.pink),
-          ] else
-            Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 48,
-                      color: Colors.white70,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'No data for this week yet',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Start logging your food entries!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white60,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeekOverview(summary) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.textOnPrimary.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.emoji_events,
-            color: Colors.white,
-            size: 32,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.textOnPrimary.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.emoji_events,
+              color: AppColors.textOnPrimary,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -269,35 +370,32 @@ class _SummaryViewState extends State<SummaryView>
               children: [
                 Text(
                   summary.achievementMessage,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textOnPrimary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Week ${summary.weekNumber} • ${summary.cleanDays}/${summary.totalDays} clean days',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textOnPrimary.withOpacity(0.8),
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: AppColors.textOnPrimary.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               '${summary.cleanPercentage.toStringAsFixed(1)}%',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppColors.textOnPrimary,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -306,52 +404,54 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildPersonSummary(summary, String name, String emoji, Color color) {
+  Widget _buildPersonSummary(BuildContext context, summary, String name, String emoji, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        color: AppColors.textOnPrimary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.textOnPrimary.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 20)),
-              const SizedBox(width: 8),
+              Text(emoji, style: const TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
               Text(
                 name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textOnPrimary,
                 ),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: AppColors.textOnPrimary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${summary.totalEntries} entries',
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: Colors.white,
+                    color: AppColors.textOnPrimary,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
                 child: _buildStatItem(
+                  context,
                   'Clean',
                   summary.cleanEntries.toString(),
                   AppColors.cleanDayGreen,
@@ -361,6 +461,7 @@ class _SummaryViewState extends State<SummaryView>
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatItem(
+                  context,
                   'Junk',
                   summary.junkEntries.toString(),
                   AppColors.junkFoodRed,
@@ -374,32 +475,34 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildStatItem(String title, String value, Color color, IconData icon) {
+  Widget _buildStatItem(BuildContext context, String title, String value, Color color, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 4),
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w500,
               color: color,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: color,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -407,221 +510,299 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildWeeklyTrendChart() {
+  Widget _buildWeeklyTrendChart(BuildContext context) {
     final weeklySummaries = _foodController.weeklySummaries;
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Weekly Clean Days Trend',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.cleanDayGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.trending_up,
+                    color: AppColors.cleanDayGreen,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Weekly Clean Days Trend',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: weeklySummaries.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No data available yet',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                  )
-                : LineChart(
-                    LineChartData(
-                      gridData: FlGridData(show: false),
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 40,
-                            getTitlesWidget: (value, meta) {
-                              return Text(
-                                value.toInt().toString(),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                ),
-                              );
-                            },
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 200,
+              child: weeklySummaries.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.analytics_outlined,
+                            size: 48,
+                            color: AppColors.textSecondary.withOpacity(0.5),
                           ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No data available yet',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Start tracking to see your progress',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : LineChart(
+                      LineChartData(
+                        gridData: FlGridData(
+                          show: true,
+                          drawVerticalLine: false,
+                          horizontalInterval: 1,
+                          getDrawingHorizontalLine: (value) {
+                            return FlLine(
+                              color: AppColors.border,
+                              strokeWidth: 1,
+                            );
+                          },
                         ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              if (value.toInt() < weeklySummaries.length) {
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 40,
+                              getTitlesWidget: (value, meta) {
                                 return Text(
-                                  'W${weeklySummaries[value.toInt()].weekNumber}',
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                                  value.toInt().toString(),
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                     color: AppColors.textSecondary,
                                   ),
                                 );
-                              }
-                              return const Text('');
-                            },
+                              },
+                            ),
                           ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                if (value.toInt() < weeklySummaries.length) {
+                                  return Text(
+                                    'W${weeklySummaries[value.toInt()].weekNumber}',
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  );
+                                }
+                                return const Text('');
+                              },
+                            ),
+                          ),
+                          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                         ),
-                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        borderData: FlBorderData(show: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: weeklySummaries.asMap().entries.map((entry) {
+                              return FlSpot(entry.key.toDouble(), entry.value.cleanDays.toDouble());
+                            }).toList(),
+                            isCurved: true,
+                            color: AppColors.cleanDayGreen,
+                            barWidth: 3,
+                            isStrokeCapRound: true,
+                            dotData: FlDotData(
+                              show: true,
+                              getDotPainter: (spot, percent, barData, index) {
+                                return FlDotCirclePainter(
+                                  radius: 4,
+                                  color: AppColors.cleanDayGreen,
+                                  strokeWidth: 2,
+                                  strokeColor: AppColors.surfaceLight,
+                                );
+                              },
+                            ),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              color: AppColors.cleanDayGreen.withOpacity(0.1),
+                            ),
+                          ),
+                        ],
                       ),
-                      borderData: FlBorderData(show: false),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: weeklySummaries.asMap().entries.map((entry) {
-                            return FlSpot(entry.key.toDouble(), entry.value.cleanDays.toDouble());
-                          }).toList(),
-                          isCurved: true,
-                          color: AppColors.cleanDayGreen,
-                          barWidth: 3,
-                          isStrokeCapRound: true,
-                          dotData: FlDotData(
-                            show: true,
-                            getDotPainter: (spot, percent, barData, index) {
-                              return FlDotCirclePainter(
-                                radius: 4,
-                                color: AppColors.cleanDayGreen,
-                                strokeWidth: 2,
-                                strokeColor: Colors.white,
-                              );
-                            },
-                          ),
-                          belowBarData: BarAreaData(
-                            show: true,
-                            color: AppColors.cleanDayGreen.withOpacity(0.1),
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildWeeklyComparison() {
+  Widget _buildWeeklyComparison(BuildContext context) {
     final currentWeek = _foodController.currentWeekSummary;
     final lastWeek = _foodController.weeklySummaries.length > 1 
         ? _foodController.weeklySummaries[_foodController.weeklySummaries.length - 2]
         : null;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Week-over-Week Comparison',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (currentWeek != null && lastWeek != null) ...[
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
               children: [
-                Expanded(
-                  child: _buildComparisonCard(
-                    'This Week',
-                    currentWeek.cleanDays,
-                    currentWeek.totalDays,
-                    AppColors.primaryPink,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.compare_arrows,
+                    color: AppColors.primaryPink,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _buildComparisonCard(
-                    'Last Week',
-                    lastWeek.cleanDays,
-                    lastWeek.totalDays,
-                    AppColors.primaryPurple,
+                Text(
+                  'Week-over-Week Comparison',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            _buildImprovementIndicator(currentWeek, lastWeek),
-          ] else
-            const Center(
-              child: Text(
-                'Need more data for comparison',
-                style: TextStyle(color: AppColors.textSecondary),
+            const SizedBox(height: 20),
+            if (currentWeek != null && lastWeek != null) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildComparisonCard(
+                      context,
+                      'This Week',
+                      currentWeek.cleanDays,
+                      currentWeek.totalDays,
+                      AppColors.primaryPink,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildComparisonCard(
+                      context,
+                      'Last Week',
+                      lastWeek.cleanDays,
+                      lastWeek.totalDays,
+                      AppColors.primaryPurple,
+                    ),
+                  ),
+                ],
               ),
-            ),
-        ],
+              const SizedBox(height: 20),
+              _buildImprovementIndicator(context, currentWeek, lastWeek),
+            ] else
+              Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.trending_flat,
+                      size: 48,
+                      color: AppColors.textSecondary.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Need more data for comparison',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Track for at least 2 weeks to see trends',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildComparisonCard(String title, int cleanDays, int totalDays, Color color) {
+  Widget _buildComparisonCard(BuildContext context, String title, int cleanDays, int totalDays, Color color) {
     final percentage = totalDays > 0 ? (cleanDays / totalDays * 100) : 0.0;
     
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w500,
               color: color,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             '$cleanDays/$totalDays',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.w500,
               color: color,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             '${percentage.toStringAsFixed(1)}%',
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: color.withOpacity(0.8),
             ),
           ),
@@ -630,7 +811,7 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildImprovementIndicator(currentWeek, lastWeek) {
+  Widget _buildImprovementIndicator(BuildContext context, currentWeek, lastWeek) {
     final currentPercentage = currentWeek.totalDays > 0 ? (currentWeek.cleanDays / currentWeek.totalDays * 100) : 0.0;
     final lastPercentage = lastWeek.totalDays > 0 ? (lastWeek.cleanDays / lastWeek.totalDays * 100) : 0.0;
     final improvement = currentPercentage - lastPercentage;
@@ -648,130 +829,177 @@ class _SummaryViewState extends State<SummaryView>
       improvementIcon = Icons.trending_down;
       improvementText = '${improvement.toStringAsFixed(1)}%';
     } else {
-      improvementColor = Colors.grey;
+      improvementColor = AppColors.textSecondary;
       improvementIcon = Icons.trending_flat;
       improvementText = '0.0%';
     }
     
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: improvementColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: improvementColor.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          Icon(improvementIcon, color: improvementColor, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            'Improvement: $improvementText',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: improvementColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeeklyHistory() {
-    final weeklySummaries = _foodController.weeklySummaries;
-    
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Weekly History',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (weeklySummaries.isEmpty)
-            const Center(
-              child: Text(
-                'No weekly data available yet',
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-            )
-          else
-            ...weeklySummaries.take(5).map((summary) => _buildWeeklySummaryItem(summary)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeeklySummaryItem(summary) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _getAchievementColor(summary.achievementLevel).withOpacity(0.1),
+        color: improvementColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _getAchievementColor(summary.achievementLevel).withOpacity(0.3),
+          color: improvementColor.withOpacity(0.3),
+          width: 1,
         ),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: _getAchievementColor(summary.achievementLevel).withOpacity(0.2),
+              color: improvementColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(improvementIcon, color: improvementColor, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Improvement: $improvementText',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: improvementColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeeklyHistory(BuildContext context) {
+    final weeklySummaries = _foodController.weeklySummaries;
+    
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPurple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.history,
+                    color: AppColors.primaryPurple,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Weekly History',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            if (weeklySummaries.isEmpty)
+              Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.history,
+                      size: 48,
+                      color: AppColors.textSecondary.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No weekly data available yet',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Your weekly summaries will appear here',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              ...weeklySummaries.take(5).map((summary) => _buildWeeklySummaryItem(context, summary)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeeklySummaryItem(BuildContext context, summary) {
+    final achievementColor = _getAchievementColor(summary.achievementLevel);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: achievementColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: achievementColor.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: achievementColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               _getAchievementIcon(summary.achievementLevel),
-              color: _getAchievementColor(summary.achievementLevel),
-              size: 20,
+              color: achievementColor,
+              size: 24,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Week ${summary.weekNumber}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   '${summary.cleanDays}/${summary.totalDays} clean days',
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
-                if (summary.combinedFine.totalExercises > 0)
+                if (summary.combinedFine.totalExercises > 0) ...[
+                  const SizedBox(height: 4),
                   Text(
                     '${summary.combinedFine.totalExercises} total exercises',
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
+                ],
               ],
             ),
           ),
@@ -780,18 +1008,17 @@ class _SummaryViewState extends State<SummaryView>
             children: [
               Text(
                 '${summary.cleanPercentage.toStringAsFixed(1)}%',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: _getAchievementColor(summary.achievementLevel),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: achievementColor,
                 ),
               ),
+              const SizedBox(height: 4),
               Text(
                 summary.achievementMessage,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _getAchievementColor(summary.achievementLevel),
-                  fontWeight: FontWeight.w600,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: achievementColor,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.end,
               ),
@@ -802,25 +1029,26 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildMonthlySummary() {
+  Widget _buildMonthlySummary(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildMonthlyOverview(),
-          const SizedBox(height: 24),
-          _buildMonthlyChart(),
-          const SizedBox(height: 24),
-          _buildMonthlyComparison(),
-          const SizedBox(height: 24),
-          _buildMonthlyTrends(),
+          _buildMonthlyOverview(context),
+          const SizedBox(height: 20),
+          _buildMonthlyChart(context),
+          const SizedBox(height: 20),
+          _buildMonthlyComparison(context),
+          const SizedBox(height: 20),
+          _buildMonthlyTrends(context),
         ],
       ),
     );
   }
 
-  Widget _buildMonthlyOverview() {
+  Widget _buildMonthlyOverview(BuildContext context) {
     final now = DateTime.now();
     final currentMonth = now.month;
     final monthEntries = _foodController.foodEntries
@@ -832,124 +1060,151 @@ class _SummaryViewState extends State<SummaryView>
     final totalDays = monthEntries.length;
     final cleanPercentage = totalDays > 0 ? (cleanDays / totalDays * 100) : 0.0;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: AppGradients.romantic,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryPink.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.calendar_month, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
-              const Text(
-                'Monthly Overview',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _buildMonthlyStatCard(
-                  'Clean Days',
-                  cleanDays.toString(),
-                  AppColors.cleanDayGreen,
-                  Icons.eco,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildMonthlyStatCard(
-                  'Junk Days',
-                  junkDays.toString(),
-                  AppColors.junkFoodRed,
-                  Icons.fastfood,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: AppGradients.romantic,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                const Icon(Icons.trending_up, color: Colors.white, size: 24),
-                const SizedBox(width: 12),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.textOnPrimary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.calendar_month,
+                    color: AppColors.textOnPrimary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Clean Day Percentage',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        '${cleanPercentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    'Monthly Overview',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textOnPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMonthlyStatCard(
+                    context,
+                    'Clean Days',
+                    cleanDays.toString(),
+                    AppColors.cleanDayGreen,
+                    Icons.eco,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildMonthlyStatCard(
+                    context,
+                    'Junk Days',
+                    junkDays.toString(),
+                    AppColors.junkFoodRed,
+                    Icons.fastfood,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.textOnPrimary.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColors.textOnPrimary.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.textOnPrimary.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.trending_up, color: AppColors.textOnPrimary, size: 24),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Clean Day Percentage',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textOnPrimary.withOpacity(0.8),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${cleanPercentage.toStringAsFixed(1)}%',
+                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                            color: AppColors.textOnPrimary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMonthlyStatCard(String title, String value, Color color, IconData icon) {
+  Widget _buildMonthlyStatCard(BuildContext context, String title, String value, Color color, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        color: AppColors.textOnPrimary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.textOnPrimary.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
           Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.textOnPrimary,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white70,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: AppColors.textOnPrimary.withOpacity(0.8),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -958,7 +1213,7 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildMonthlyChart() {
+  Widget _buildMonthlyChart(BuildContext context) {
     final now = DateTime.now();
     final currentMonth = now.month;
     final monthEntries = _foodController.foodEntries
@@ -968,78 +1223,89 @@ class _SummaryViewState extends State<SummaryView>
     final cleanDays = monthEntries.where((e) => e.status == AppConstants.cleanDay).length;
     final junkDays = monthEntries.where((e) => e.status == AppConstants.junkFine).length;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Monthly Distribution',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.pie_chart,
+                    color: AppColors.primaryPink,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Monthly Distribution',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 2,
-                centerSpaceRadius: 40,
-                sections: [
-                  PieChartSectionData(
-                    color: AppColors.cleanDayGreen,
-                    value: cleanDays.toDouble(),
-                    title: '$cleanDays',
-                    radius: 50,
-                    titleStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 200,
+              child: PieChart(
+                PieChartData(
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 40,
+                  sections: [
+                    PieChartSectionData(
+                      color: AppColors.cleanDayGreen,
+                      value: cleanDays.toDouble(),
+                      title: '$cleanDays',
+                      radius: 50,
+                      titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textOnPrimary,
+                      ),
                     ),
-                  ),
-                  PieChartSectionData(
-                    color: AppColors.junkFoodRed,
-                    value: junkDays.toDouble(),
-                    title: '$junkDays',
-                    radius: 50,
-                    titleStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    PieChartSectionData(
+                      color: AppColors.junkFoodRed,
+                      value: junkDays.toDouble(),
+                      title: '$junkDays',
+                      radius: 50,
+                      titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textOnPrimary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildLegendItem('Clean Days', AppColors.cleanDayGreen),
-              _buildLegendItem('Junk Days', AppColors.junkFoodRed),
-            ],
-          ),
-        ],
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildLegendItem(context, 'Clean Days', AppColors.cleanDayGreen),
+                _buildLegendItem(context, 'Junk Days', AppColors.junkFoodRed),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(BuildContext context, String label, Color color) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -1051,11 +1317,10 @@ class _SummaryViewState extends State<SummaryView>
             shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w500,
           ),
@@ -1064,7 +1329,7 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildMonthlyComparison() {
+  Widget _buildMonthlyComparison(BuildContext context) {
     final now = DateTime.now();
     final currentMonth = now.month;
     final lastMonth = currentMonth == 1 ? 12 : currentMonth - 1;
@@ -1081,274 +1346,338 @@ class _SummaryViewState extends State<SummaryView>
     final currentTotalDays = currentMonthEntries.length;
     final lastTotalDays = lastMonthEntries.length;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Month-over-Month Comparison',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (currentTotalDays > 0 && lastTotalDays > 0) ...[
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
               children: [
-                Expanded(
-                  child: _buildComparisonCard(
-                    'This Month',
-                    currentCleanDays,
-                    currentTotalDays,
-                    AppColors.primaryPink,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.compare_arrows,
+                    color: AppColors.secondaryBlue,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _buildComparisonCard(
-                    'Last Month',
-                    lastCleanDays,
-                    lastTotalDays,
-                    AppColors.primaryPurple,
+                Text(
+                  'Month-over-Month Comparison',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
             ),
-          ] else
-            const Center(
-              child: Text(
-                'Need more data for comparison',
-                style: TextStyle(color: AppColors.textSecondary),
+            const SizedBox(height: 20),
+            if (currentTotalDays > 0 && lastTotalDays > 0) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildComparisonCard(
+                      context,
+                      'This Month',
+                      currentCleanDays,
+                      currentTotalDays,
+                      AppColors.primaryPink,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildComparisonCard(
+                      context,
+                      'Last Month',
+                      lastCleanDays,
+                      lastTotalDays,
+                      AppColors.primaryPurple,
+                    ),
+                  ),
+                ],
               ),
-            ),
-        ],
+            ] else
+              Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.trending_flat,
+                      size: 48,
+                      color: AppColors.textSecondary.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Need more data for comparison',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Track for at least 2 months to see trends',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMonthlyTrends() {
+  Widget _buildMonthlyTrends(BuildContext context) {
     final now = DateTime.now();
     final months = List.generate(6, (index) {
       final month = now.month - index;
       return month <= 0 ? month + 12 : month;
     }).reversed.toList();
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '6-Month Trend',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.cleanDayGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.trending_up,
+                    color: AppColors.cleanDayGreen,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  '6-Month Trend',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: 30,
-                barTouchData: BarTouchData(enabled: false),
-                titlesData: FlTitlesData(
-                  show: true,
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        if (value.toInt() < months.length) {
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 200,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: 30,
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          if (value.toInt() < months.length) {
+                            return Text(
+                              'M${months[value.toInt()]}',
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            );
+                          }
+                          return const Text('');
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
                           return Text(
-                            'M${months[value.toInt()]}',
-                            style: const TextStyle(
-                              fontSize: 12,
+                            value.toInt().toString(),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: AppColors.textSecondary,
                             ),
                           );
-                        }
-                        return const Text('');
-                      },
-                    ),
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 40,
-                      getTitlesWidget: (value, meta) {
-                        return Text(
-                          value.toInt().toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                barGroups: months.asMap().entries.map((entry) {
-                  final monthEntries = _foodController.foodEntries
-                      .where((e) => e.date.month == entry.value)
-                      .toList();
-                  final cleanDays = monthEntries.where((e) => e.status == AppConstants.cleanDay).length;
-                  
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: cleanDays.toDouble(),
-                        color: AppColors.cleanDayGreen,
-                        width: 20,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4),
-                          topRight: Radius.circular(4),
-                        ),
+                        },
                       ),
-                    ],
-                  );
-                }).toList(),
+                    ),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  barGroups: months.asMap().entries.map((entry) {
+                    final monthEntries = _foodController.foodEntries
+                        .where((e) => e.date.month == entry.value)
+                        .toList();
+                    final cleanDays = monthEntries.where((e) => e.status == AppConstants.cleanDay).length;
+                    
+                    return BarChartGroupData(
+                      x: entry.key,
+                      barRods: [
+                        BarChartRodData(
+                          toY: cleanDays.toDouble(),
+                          color: AppColors.cleanDayGreen,
+                          width: 20,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(4),
+                            topRight: Radius.circular(4),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildExerciseAnalytics() {
+  Widget _buildExerciseAnalytics(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildExerciseOverview(),
-          const SizedBox(height: 24),
-          _buildExerciseBreakdown(),
-          const SizedBox(height: 24),
-          _buildExerciseTrends(),
-          const SizedBox(height: 24),
-          _buildExerciseComparison(),
+          _buildExerciseOverview(context),
+          const SizedBox(height: 20),
+          _buildExerciseBreakdown(context),
+          const SizedBox(height: 20),
+          _buildExerciseTrends(context),
+          const SizedBox(height: 20),
+          _buildExerciseComparison(context),
         ],
       ),
     );
   }
 
-  Widget _buildExerciseOverview() {
+  Widget _buildExerciseOverview(BuildContext context) {
     final totalFines = _accountabilityController.totalPendingExercises;
     
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: AppGradients.romantic,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.textOnPrimary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.fitness_center,
+                    color: AppColors.textOnPrimary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'Exercise Overview',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textOnPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildExerciseStatCard(
+                    context,
+                    'Total Exercises',
+                    totalFines.totalExercises.toString(),
+                    AppColors.textOnPrimary,
+                    Icons.fitness_center,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildExerciseStatCard(
+                    context,
+                    'Pending',
+                    _accountabilityController.totalPendingFines.toString(),
+                    AppColors.cheatMealOrange,
+                    Icons.pending,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExerciseStatCard(BuildContext context, String title, String value, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: AppGradients.romantic,
+        color: AppColors.textOnPrimary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryPink.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.fitness_center, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
-              const Text(
-                'Exercise Overview',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _buildExerciseStatCard(
-                  'Total Exercises',
-                  totalFines.totalExercises.toString(),
-                  Colors.white,
-                  Icons.fitness_center,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildExerciseStatCard(
-                  'Pending',
-                  _accountabilityController.totalPendingFines.toString(),
-                  Colors.orange,
-                  Icons.pending,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExerciseStatCard(String title, String value, Color color, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        border: Border.all(
+          color: AppColors.textOnPrimary.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
           Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.textOnPrimary,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white70,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: AppColors.textOnPrimary.withOpacity(0.8),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -1357,34 +1686,46 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildExerciseBreakdown() {
+  Widget _buildExerciseBreakdown(BuildContext context) {
     final totalFines = _accountabilityController.totalPendingExercises;
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Exercise Breakdown',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.junkFoodRed.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.bar_chart,
+                    color: AppColors.junkFoodRed,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Exercise Breakdown',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 20),
           SizedBox(
             height: 200,
             child: BarChart(
@@ -1526,7 +1867,7 @@ class _SummaryViewState extends State<SummaryView>
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildExerciseLegend(String label, Color color, int count) {
@@ -1554,34 +1895,46 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildExerciseTrends() {
+  Widget _buildExerciseTrends(BuildContext context) {
     final weeklySummaries = _foodController.weeklySummaries;
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Exercise Trends',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPurple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.trending_up,
+                    color: AppColors.primaryPurple,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Exercise Trends',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 20),
           SizedBox(
             height: 200,
             child: weeklySummaries.isEmpty
@@ -1662,10 +2015,10 @@ class _SummaryViewState extends State<SummaryView>
           ),
         ],
       ),
-    );
+    ));
   }
 
-  Widget _buildExerciseComparison() {
+  Widget _buildExerciseComparison(BuildContext context) {
     final himEntries = _accountabilityController.accountabilityEntries
         .where((e) => e.whoAte == AppConstants.him)
         .toList();
@@ -1676,75 +2029,90 @@ class _SummaryViewState extends State<SummaryView>
     final himTotal = himEntries.fold(0, (sum, e) => sum + e.fine.totalExercises);
     final herTotal = herEntries.fold(0, (sum, e) => sum + e.fine.totalExercises);
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Exercise Comparison',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryTeal.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.compare_arrows,
+                    color: AppColors.secondaryTeal,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Exercise Comparison',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildPersonExerciseCard('Him', himTotal, Colors.blue, Icons.male),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildPersonExerciseCard('Her', herTotal, Colors.pink, Icons.female),
-              ),
-            ],
-          ),
-        ],
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildPersonExerciseCard(context, 'Him', himTotal, AppColors.secondaryBlue, Icons.male),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildPersonExerciseCard(context, 'Her', herTotal, AppColors.primaryPink, Icons.female),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPersonExerciseCard(String name, int total, Color color, IconData icon) {
+  Widget _buildPersonExerciseCard(BuildContext context, String name, int total, Color color, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
           Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             total.toString(),
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.w500,
               color: color,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             '$name Exercises',
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: color,
               fontWeight: FontWeight.w500,
             ),
@@ -1754,25 +2122,26 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildDistributionAnalytics() {
+  Widget _buildDistributionAnalytics(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDistributionOverview(),
-          const SizedBox(height: 24),
-          _buildDistributionChart(),
-          const SizedBox(height: 24),
-          _buildDistributionBreakdown(),
-          const SizedBox(height: 24),
-          _buildDistributionTrends(),
+          _buildDistributionOverview(context),
+          const SizedBox(height: 20),
+          _buildDistributionChart(context),
+          const SizedBox(height: 20),
+          _buildDistributionBreakdown(context),
+          const SizedBox(height: 20),
+          _buildDistributionTrends(context),
         ],
       ),
     );
   }
 
-  Widget _buildDistributionOverview() {
+  Widget _buildDistributionOverview(BuildContext context) {
     final himFromHer = _accountabilityController.accountabilityEntries
         .where((e) => e.whoAte == AppConstants.him && e.isFromPartner)
         .fold(0, (sum, e) => sum + e.fine.totalExercises);
@@ -1783,97 +2152,115 @@ class _SummaryViewState extends State<SummaryView>
 
     final totalDistribution = himFromHer + herFromHim;
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: AppGradients.romantic,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryPink.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.share, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
-              const Text(
-                'Partner Distribution',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: AppGradients.romantic,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.textOnPrimary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.share,
+                    color: AppColors.textOnPrimary,
+                    size: 24,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDistributionStatCard(
-                  'Total Shared',
-                  totalDistribution.toString(),
-                  Colors.white,
-                  Icons.share,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'Partner Distribution',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textOnPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildDistributionStatCard(
-                  'Him from Her',
-                  himFromHer.toString(),
-                  Colors.blue,
-                  Icons.arrow_downward,
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDistributionStatCard(
+                    context,
+                    'Total Shared',
+                    totalDistribution.toString(),
+                    AppColors.textOnPrimary,
+                    Icons.share,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildDistributionStatCard(
-                  'Her from Him',
-                  herFromHim.toString(),
-                  Colors.pink,
-                  Icons.arrow_upward,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildDistributionStatCard(
+                    context,
+                    'Him from Her',
+                    himFromHer.toString(),
+                    AppColors.secondaryBlue,
+                    Icons.arrow_downward,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildDistributionStatCard(
+                    context,
+                    'Her from Him',
+                    herFromHim.toString(),
+                    AppColors.primaryPink,
+                    Icons.arrow_upward,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildDistributionStatCard(String title, String value, Color color, IconData icon) {
+  Widget _buildDistributionStatCard(BuildContext context, String title, String value, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        color: AppColors.textOnPrimary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.textOnPrimary.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.textOnPrimary,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 10,
-              color: Colors.white70,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppColors.textOnPrimary.withOpacity(0.8),
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
@@ -1883,7 +2270,7 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildDistributionChart() {
+  Widget _buildDistributionChart(BuildContext context) {
     final himFromHer = _accountabilityController.accountabilityEntries
         .where((e) => e.whoAte == AppConstants.him && e.isFromPartner)
         .fold(0, (sum, e) => sum + e.fine.totalExercises);
@@ -1892,112 +2279,136 @@ class _SummaryViewState extends State<SummaryView>
         .where((e) => e.whoAte == AppConstants.her && e.isFromPartner)
         .fold(0, (sum, e) => sum + e.fine.totalExercises);
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Distribution Breakdown',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.pie_chart,
+                    color: AppColors.primaryPink,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Distribution Breakdown',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 2,
-                centerSpaceRadius: 40,
-                sections: [
-                  PieChartSectionData(
-                    color: Colors.blue,
-                    value: himFromHer.toDouble(),
-                    title: '$himFromHer',
-                    radius: 50,
-                    titleStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 200,
+              child: PieChart(
+                PieChartData(
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 40,
+                  sections: [
+                    PieChartSectionData(
+                      color: AppColors.secondaryBlue,
+                      value: himFromHer.toDouble(),
+                      title: '$himFromHer',
+                      radius: 50,
+                      titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textOnPrimary,
+                      ),
                     ),
-                  ),
-                  PieChartSectionData(
-                    color: Colors.pink,
-                    value: herFromHim.toDouble(),
-                    title: '$herFromHim',
-                    radius: 50,
-                    titleStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    PieChartSectionData(
+                      color: AppColors.primaryPink,
+                      value: herFromHim.toDouble(),
+                      title: '$herFromHim',
+                      radius: 50,
+                      titleStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textOnPrimary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildLegendItem('Him from Her', Colors.blue),
-              _buildLegendItem('Her from Him', Colors.pink),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDistributionBreakdown() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Detailed Distribution',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildLegendItem(context, 'Him from Her', AppColors.secondaryBlue),
+                _buildLegendItem(context, 'Her from Him', AppColors.primaryPink),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildDistributionItem('Him from Her', Colors.blue, AppConstants.him, true),
-          const SizedBox(height: 12),
-          _buildDistributionItem('Her from Him', Colors.pink, AppConstants.her, true),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildDistributionItem(String title, Color color, String person, bool isFromPartner) {
+  Widget _buildDistributionBreakdown(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryTeal.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.analytics,
+                    color: AppColors.secondaryTeal,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Detailed Distribution',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            _buildDistributionItem(context, 'Him from Her', AppColors.secondaryBlue, AppConstants.him, true),
+            const SizedBox(height: 16),
+            _buildDistributionItem(context, 'Her from Him', AppColors.primaryPink, AppConstants.her, true),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDistributionItem(BuildContext context, String title, Color color, String person, bool isFromPartner) {
     final entries = _accountabilityController.accountabilityEntries
         .where((e) => e.whoAte == person && e.isFromPartner == isFromPartner)
         .toList();
@@ -2006,44 +2417,46 @@ class _SummaryViewState extends State<SummaryView>
     final totalFines = entries.length;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
             ),
             child: Icon(
               person == AppConstants.him ? Icons.male : Icons.female,
-              color: Colors.white,
+              color: AppColors.textOnPrimary,
+              size: 24,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
                     color: color,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '$totalFines fines • $totalExercises exercises',
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -2055,7 +2468,7 @@ class _SummaryViewState extends State<SummaryView>
     );
   }
 
-  Widget _buildDistributionTrends() {
+  Widget _buildDistributionTrends(BuildContext context) {
     final currentWeek = _getCurrentWeek();
     final weeks = List.generate(4, (index) => currentWeek - index);
     
@@ -2083,125 +2496,136 @@ class _SummaryViewState extends State<SummaryView>
     // Add some padding to the max value and ensure minimum height
     maxY = (maxY * 1.1).clamp(10.0, double.infinity);
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Weekly Distribution Trends',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPurple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.trending_up,
+                    color: AppColors.primaryPurple,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Weekly Distribution Trends',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: maxY,
-                barTouchData: BarTouchData(enabled: false),
-                titlesData: FlTitlesData(
-                  show: true,
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        if (value.toInt() < weeks.length) {
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 200,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: maxY,
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          if (value.toInt() < weeks.length) {
+                            return Text(
+                              'W${weeks[value.toInt()]}',
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            );
+                          }
+                          return const Text('');
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
                           return Text(
-                            'W${weeks[value.toInt()]}',
-                            style: const TextStyle(
-                              fontSize: 12,
+                            value.toInt().toString(),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: AppColors.textSecondary,
                             ),
                           );
-                        }
-                        return const Text('');
-                      },
+                        },
+                      ),
                     ),
                   ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 40,
-                      getTitlesWidget: (value, meta) {
-                        return Text(
-                          value.toInt().toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                barGroups: weeks.asMap().entries.map((entry) {
-                  final weekEntries = _accountabilityController.accountabilityEntries
-                      .where((e) => e.weekNumber == entry.value)
-                      .toList();
-                  
-                  final himFromHer = weekEntries
-                      .where((e) => e.whoAte == AppConstants.him && e.isFromPartner)
-                      .fold(0, (sum, e) => sum + e.fine.totalExercises);
-                  
-                  final herFromHim = weekEntries
-                      .where((e) => e.whoAte == AppConstants.her && e.isFromPartner)
-                      .fold(0, (sum, e) => sum + e.fine.totalExercises);
+                  borderData: FlBorderData(show: false),
+                  barGroups: weeks.asMap().entries.map((entry) {
+                    final weekEntries = _accountabilityController.accountabilityEntries
+                        .where((e) => e.weekNumber == entry.value)
+                        .toList();
+                    
+                    final himFromHer = weekEntries
+                        .where((e) => e.whoAte == AppConstants.him && e.isFromPartner)
+                        .fold(0, (sum, e) => sum + e.fine.totalExercises);
+                    
+                    final herFromHim = weekEntries
+                        .where((e) => e.whoAte == AppConstants.her && e.isFromPartner)
+                        .fold(0, (sum, e) => sum + e.fine.totalExercises);
 
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: himFromHer.toDouble(),
-                        color: Colors.blue,
-                        width: 15,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4),
-                          topRight: Radius.circular(4),
+                    return BarChartGroupData(
+                      x: entry.key,
+                      barRods: [
+                        BarChartRodData(
+                          toY: himFromHer.toDouble(),
+                          color: AppColors.secondaryBlue,
+                          width: 15,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(4),
+                            topRight: Radius.circular(4),
+                          ),
                         ),
-                      ),
-                      BarChartRodData(
-                        toY: herFromHim.toDouble(),
-                        color: Colors.pink,
-                        width: 15,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4),
-                          topRight: Radius.circular(4),
+                        BarChartRodData(
+                          toY: herFromHim.toDouble(),
+                          color: AppColors.primaryPink,
+                          width: 15,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(4),
+                            topRight: Radius.circular(4),
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                }).toList(),
+                      ],
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildLegendItem('Him from Her', Colors.blue),
-              _buildLegendItem('Her from Him', Colors.pink),
-            ],
-          ),
-        ],
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildLegendItem(context, 'Him from Her', AppColors.secondaryBlue),
+                _buildLegendItem(context, 'Her from Him', AppColors.primaryPink),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
