@@ -1,7 +1,7 @@
 class AppConstants {
   // App Information
-  static const String appName = "Love & Fitness Tracker";
-  static const String appTagline = "Together We Stay Strong 💕";
+  static const String appName = "FitTogether";
+  static const String appTagline = "Stronger hearts, healthier lives — together.";
   static const String appVersion = "1.0.0";
   
   // Food Types

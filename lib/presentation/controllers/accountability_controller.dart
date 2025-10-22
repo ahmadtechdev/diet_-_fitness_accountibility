@@ -16,7 +16,7 @@ class AccountabilityController extends GetxController {
 
   // Observable state
   final RxBool _isLoading = false.obs;
-  final RxString _selectedFilter = 'all'.obs; // 'all', 'pending', 'completed', 'my', 'partner'
+  final RxString _selectedFilter = 'pending'.obs; // 'all', 'pending', 'completed', 'my', 'partner'
 
   // Getters
   List<AccountabilityEntry> get accountabilityEntries => _accountabilityEntries;
@@ -29,23 +29,27 @@ class AccountabilityController extends GetxController {
   List<AccountabilityEntry> get filteredEntries {
     switch (_selectedFilter.value) {
       case 'pending':
-        return _pendingEntries;
+        return List.from(_pendingEntries);
       case 'completed':
-        return _completedEntries;
+        return List.from(_completedEntries);
       case 'my':
-        return _accountabilityEntries.where((entry) => !entry.isFromPartner).toList();
+        // Show all entries for "him" (both pending and completed)
+        // This includes entries where whoAte is "Him" (regardless of isFromPartner)
+        return _accountabilityEntries.where((entry) => entry.whoAte == AppConstants.him).toList();
       case 'partner':
-        return _accountabilityEntries.where((entry) => entry.isFromPartner).toList();
+        // Show all entries for "her" (both pending and completed)
+        // This includes entries where whoAte is "Her" (regardless of isFromPartner)
+        return _accountabilityEntries.where((entry) => entry.whoAte == AppConstants.her).toList();
       default:
-        return _accountabilityEntries;
+        return List.from(_accountabilityEntries);
     }
   }
 
   // Statistics
   int get totalPendingFines => _pendingEntries.length;
   int get totalCompletedFines => _completedEntries.length;
-  int get myPendingFines => _pendingEntries.where((entry) => !entry.isFromPartner).length;
-  int get partnerPendingFines => _pendingEntries.where((entry) => entry.isFromPartner).length;
+  int get myPendingFines => _pendingEntries.where((entry) => entry.whoAte == AppConstants.him).length;
+  int get partnerPendingFines => _pendingEntries.where((entry) => entry.whoAte == AppConstants.her).length;
 
   // Exercise totals
   ExerciseFine get totalPendingExercises {
@@ -119,6 +123,11 @@ class AccountabilityController extends GetxController {
           _completedEntries.add(entry);
         }
       }
+      
+      // Sort all lists by date descending (newest first)
+      _accountabilityEntries.sort((a, b) => b.date.compareTo(a.date));
+      _pendingEntries.sort((a, b) => b.date.compareTo(a.date));
+      _completedEntries.sort((a, b) => b.date.compareTo(a.date));
       
       // Save to storage
       await _saveAccountabilityEntries();
@@ -241,6 +250,10 @@ class AccountabilityController extends GetxController {
         _pendingEntries.add(entry);
       }
     }
+    
+    // Sort both lists by date descending (newest first)
+    _pendingEntries.sort((a, b) => b.date.compareTo(a.date));
+    _completedEntries.sort((a, b) => b.date.compareTo(a.date));
   }
 
   // Get entries for a specific week

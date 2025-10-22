@@ -78,57 +78,57 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           
-          // Quick Stats
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.primaryPink.withOpacity(0.1), AppColors.primaryPurple.withOpacity(0.1)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.primaryPink.withOpacity(0.3)),
-            ),
-            child: Obx(() {
-              final stats = getAccountabilityStats();
-              return Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildQuickStat(
-                        'Pending',
-                        '${stats['pending']}',
-                        AppColors.junkFoodRed,
-                      ),
-                      _buildQuickStat(
-                        'Completed',
-                        '${stats['completed']}',
-                        AppColors.cleanDayGreen,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildQuickStat(
-                        'My Fines',
-                        '${stats['my']}',
-                        AppColors.primaryPink,
-                      ),
-                      _buildQuickStat(
-                        'Partner',
-                        '${stats['partner']}',
-                        AppColors.primaryPurple,
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            }),
-          ),
-          
+          // // Quick Stats
+          // Container(
+          //   margin: const EdgeInsets.all(16),
+          //   padding: const EdgeInsets.all(16),
+          //   decoration: BoxDecoration(
+          //     gradient: LinearGradient(
+          //       colors: [AppColors.primaryPink.withOpacity(0.1), AppColors.primaryPurple.withOpacity(0.1)],
+          //     ),
+          //     borderRadius: BorderRadius.circular(12),
+          //     border: Border.all(color: AppColors.primaryPink.withOpacity(0.3)),
+          //   ),
+          //   child: Obx(() {
+          //     final stats = getAccountabilityStats();
+          //     return Column(
+          //       children: [
+          //         Row(
+          //           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //           children: [
+          //             _buildQuickStat(
+          //               'Pending',
+          //               '${stats['pending']}',
+          //               AppColors.junkFoodRed,
+          //             ),
+          //             _buildQuickStat(
+          //               'Completed',
+          //               '${stats['completed']}',
+          //               AppColors.cleanDayGreen,
+          //             ),
+          //           ],
+          //         ),
+          //         const SizedBox(height: 12),
+          //         Row(
+          //           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //           children: [
+          //             _buildQuickStat(
+          //               'My Fines',
+          //               '${stats['my']}',
+          //               AppColors.primaryPink,
+          //             ),
+          //             _buildQuickStat(
+          //               'Partner',
+          //               '${stats['partner']}',
+          //               AppColors.primaryPurple,
+          //             ),
+          //           ],
+          //         ),
+          //       ],
+          //     );
+          //   }),
+          // ),
+          //
           // Navigation Items
           Expanded(
             child: ListView(

@@ -541,7 +541,7 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
               const SizedBox(width: 8),
               Text(
                 hasFine 
-                    ? (isPartnerDistribution ? '$displayName - Partner Distribution' : '$displayName - Exercise Fine')
+                    ? (isPartnerDistribution ? '$displayName - Love Distribution' : '$displayName - Exercise Fine')
                     : '$displayName - Clean Day!',
                 style: TextStyle(
                   fontSize: 16,

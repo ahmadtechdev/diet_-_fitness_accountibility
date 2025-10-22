@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/utils/colors.dart';
 import '../../core/constants/app_constants.dart';
-import '../widgets/animated_heart.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -15,28 +14,28 @@ class _SplashViewState extends State<SplashView>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _scaleController;
-  late AnimationController _heartController;
+  late AnimationController _logoController;
   
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _heartAnimation;
+  late Animation<double> _logoAnimation;
 
   @override
   void initState() {
     super.initState();
     
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
     
     _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
     
-    _heartController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+    _logoController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
@@ -49,18 +48,18 @@ class _SplashViewState extends State<SplashView>
     ));
 
     _scaleAnimation = Tween<double>(
-      begin: 0.5,
+      begin: 0.8,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _scaleController,
-      curve: Curves.elasticOut,
+      curve: Curves.easeOutCubic,
     ));
 
-    _heartAnimation = Tween<double>(
+    _logoAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _heartController,
+      parent: _logoController,
       curve: Curves.easeInOut,
     ));
 
@@ -68,14 +67,16 @@ class _SplashViewState extends State<SplashView>
   }
 
   void _startAnimations() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 300));
     _fadeController.forward();
+    
+    await Future.delayed(const Duration(milliseconds: 200));
     _scaleController.forward();
     
-    await Future.delayed(const Duration(milliseconds: 1000));
-    _heartController.forward();
+    await Future.delayed(const Duration(milliseconds: 500));
+    _logoController.forward();
     
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 2500));
     _navigateToHome();
   }
 
@@ -87,7 +88,7 @@ class _SplashViewState extends State<SplashView>
   void dispose() {
     _fadeController.dispose();
     _scaleController.dispose();
-    _heartController.dispose();
+    _logoController.dispose();
     super.dispose();
   }
 
@@ -98,124 +99,196 @@ class _SplashViewState extends State<SplashView>
         decoration: const BoxDecoration(
           gradient: AppGradients.romantic,
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedBuilder(
-                animation: _scaleAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: AnimatedBuilder(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 60),
+                    
+                    // Logo Container with Elegant Design
+                    AnimatedBuilder(
+                      animation: _scaleAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: AnimatedBuilder(
+                            animation: _fadeAnimation,
+                            builder: (context, child) {
+                              return Opacity(
+                                opacity: _fadeAnimation.value,
+                                child: Container(
+                                  width: 140,
+                                  height: 140,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surfaceLight,
+                                    borderRadius: BorderRadius.circular(35),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.shadowMedium,
+                                        blurRadius: 30,
+                                        offset: const Offset(0, 15),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(35),
+                                    child: Image.asset(
+                                      'assets/logo.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            gradient: AppGradients.romantic,
+                                            borderRadius: BorderRadius.circular(35),
+                                          ),
+                                          child: const Icon(
+                                            Icons.favorite,
+                                            size: 70,
+                                            color: AppColors.textOnPrimary,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: 48),
+                    
+                    // App Name with Elegant Typography
+                    AnimatedBuilder(
                       animation: _fadeAnimation,
                       builder: (context, child) {
                         return Opacity(
                           opacity: _fadeAnimation.value,
-                          child: Column(
+                          child: Text(
+                            AppConstants.appName,
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              color: AppColors.textOnPrimary,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 1.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Tagline with Soft Typography
+                    AnimatedBuilder(
+                      animation: _fadeAnimation,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _fadeAnimation.value,
+                          child: Text(
+                            AppConstants.appTagline,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textOnPrimary.withOpacity(0.9),
+                              fontWeight: FontWeight.w400,
+                              height: 1.4,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: 80),
+                    
+                    // Elegant Loading Indicator
+                    AnimatedBuilder(
+                      animation: _logoAnimation,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _logoAnimation.value,
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceLight.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: AppColors.surfaceLight.withOpacity(0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Center(
+                              child: SizedBox(
+                                width: 32,
+                                height: 32,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.textOnPrimary,
+                                  ),
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: 40),
+                    
+                    // Subtle Decorative Elements
+                    AnimatedBuilder(
+                      animation: _logoAnimation,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _logoAnimation.value * 0.6,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // App Icon with Heart
                               Container(
-                                width: 120,
-                                height: 120,
+                                width: 8,
+                                height: 8,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(30),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 10),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.favorite,
-                                  size: 60,
-                                  color: Colors.white,
+                                  color: AppColors.surfaceLight.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
                               ),
-                              const SizedBox(height: 32),
-                              
-                              // App Name
-                              const Text(
-                                AppConstants.appName,
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 1.2,
+                              const SizedBox(width: 12),
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceLight.withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              
-                              // Tagline
-                              const Text(
-                                AppConstants.appTagline,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white70,
-                                  fontWeight: FontWeight.w300,
+                              const SizedBox(width: 12),
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceLight.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                              ),
-                              const SizedBox(height: 48),
-                              
-                              // Animated Hearts
-                              AnimatedBuilder(
-                                animation: _heartAnimation,
-                                builder: (context, child) {
-                                  return Opacity(
-                                    opacity: _heartAnimation.value,
-                                    child: const Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        AnimatedHeart(
-                                          size: 20,
-                                          color: Colors.white,
-                                        ),
-                                        SizedBox(width: 16),
-                                        AnimatedHeart(
-                                          size: 24,
-                                          color: Colors.white,
-                                        ),
-                                        SizedBox(width: 16),
-                                        AnimatedHeart(
-                                          size: 20,
-                                          color: Colors.white,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
                               ),
                             ],
                           ),
                         );
                       },
                     ),
-                  );
-                },
+                    
+                    const SizedBox(height: 60),
+                  ],
+                ),
               ),
-              const SizedBox(height: 80),
-              
-              // Loading Indicator
-              AnimatedBuilder(
-                animation: _fadeAnimation,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _fadeAnimation.value,
-                    child: const SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeWidth: 3,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+            ),
           ),
         ),
       ),

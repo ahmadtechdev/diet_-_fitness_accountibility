@@ -77,19 +77,27 @@ class AccountabilityView extends StatelessWidget {
         return Column(
           children: [
             const SizedBox(height: 8),
-            // Filter Tabs
+            // Filter Tabs - Fixed at top
             _buildFilterTabs(context, controller),
             
-            const SizedBox(height: 16),
-            // Quick Stats
-            _buildQuickStats(context, controller),
-            
-            const SizedBox(height: 16),
-            // Entries List
+            // Scrollable content area
             Expanded(
-              child: controller.filteredEntries.isEmpty
-                  ? _buildEmptyState(context)
-                  : _buildEntriesList(context, controller),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    // Quick Stats - Now scrollable
+                    _buildQuickStats(context, controller),
+                    
+                    const SizedBox(height: 16),
+                    // Entries List
+                    controller.filteredEntries.isEmpty
+                        ? _buildEmptyState(context)
+                        : _buildEntriesList(context, controller),
+                  ],
+                ),
+              ),
             ),
           ],
         );
@@ -153,11 +161,11 @@ class AccountabilityView extends StatelessWidget {
 
   Widget _buildFilterTabs(BuildContext context, AccountabilityController controller) {
     final filters = [
-      {'key': 'all', 'label': 'All', 'icon': Icons.list_alt, 'color': AppColors.primaryPink},
       {'key': 'pending', 'label': 'Pending', 'icon': Icons.pending_actions, 'color': AppColors.junkFoodRed},
+      {'key': 'my', 'label': 'Him', 'icon': Icons.male, 'color': const Color(0xFF3B82F6)}, // Elegant blue
+      {'key': 'partner', 'label': 'Her', 'icon': Icons.female, 'color': const Color(0xFFEC4899)}, // Elegant rose
       {'key': 'completed', 'label': 'Completed', 'icon': Icons.check_circle, 'color': AppColors.cleanDayGreen},
-      {'key': 'my', 'label': 'Him', 'icon': Icons.male, 'color': Colors.blue},
-      {'key': 'partner', 'label': 'Her', 'icon': Icons.female, 'color': Colors.pink},
+      {'key': 'all', 'label': 'All', 'icon': Icons.list_alt, 'color': const Color(0xFF8B5CF6)}, // Elegant purple
     ];
 
     return Container(
@@ -270,7 +278,7 @@ class AccountabilityView extends StatelessWidget {
                   icon: Icons.male,
                   value: '${controller.myPendingFines}',
                   label: 'Him Pending',
-                  color: Colors.blue,
+                  color: const Color(0xFF3B82F6), // Elegant blue
                 ),
               ),
               const SizedBox(width: 12),
@@ -280,7 +288,7 @@ class AccountabilityView extends StatelessWidget {
                   icon: Icons.female,
                   value: '${controller.partnerPendingFines}',
                   label: 'Her Pending',
-                  color: Colors.pink,
+                  color: const Color(0xFFEC4899), // Elegant rose
                 ),
               ),
               const SizedBox(width: 12),
@@ -421,12 +429,11 @@ class AccountabilityView extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
             // Beautiful gradient container for the icon
             Container(
               width: 120,
@@ -515,20 +522,28 @@ class AccountabilityView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildEntriesList(BuildContext context, AccountabilityController controller) {
-    return ListView.separated(
+    // Sort entries by date descending (newest first) for display
+    final sortedEntries = List<dynamic>.from(controller.filteredEntries);
+    sortedEntries.sort((a, b) => b.date.compareTo(a.date));
+    
+    return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      physics: const BouncingScrollPhysics(),
-      itemCount: controller.filteredEntries.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final entry = controller.filteredEntries[index];
-        return _buildAccountabilityEntry(context, entry, controller);
-      },
+      child: Column(
+        children: List.generate(
+          sortedEntries.length,
+          (index) {
+            final entry = sortedEntries[index];
+            return Padding(
+              padding: EdgeInsets.only(bottom: index < sortedEntries.length - 1 ? 12 : 0),
+              child: _buildAccountabilityEntry(context, entry, controller),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -536,13 +551,56 @@ class AccountabilityView extends StatelessWidget {
     final isHer = entry.whoAte == AppConstants.her;
     final isCompleted = entry.isCompleted;
     final isFromPartner = entry.isFromPartner;
+
+
     
-    // Determine colors based on entry type
-    final primaryColor = isFromPartner 
-        ? AppColors.cheatMealOrange 
-        : (isHer ? Colors.pink : Colors.blue);
-    final backgroundColor = primaryColor.withOpacity(0.05);
-    final borderColor = primaryColor.withOpacity(0.2);
+    // Enhanced color scheme with better separation and elegance
+    Color primaryColor;
+    Color backgroundColor;
+    Color borderColor;
+    Gradient avatarGradient;
+    Gradient toggleGradient;
+    
+    if (isFromPartner) {
+      // Partner distribution entries - elegant purple/rose gradient
+      primaryColor = const Color(0xFF8B5CF6); // Elegant purple
+      backgroundColor = const Color(0xFF8B5CF6).withOpacity(0.08);
+      borderColor = const Color(0xFF8B5CF6).withOpacity(0.25);
+      avatarGradient = const LinearGradient(
+        colors: [Color(0xFF8B5CF6), Color(0xFFEC4899)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+    } else if (isHer) {
+      // Her entries - elegant rose/pink gradient
+      primaryColor = const Color(0xFFEC4899); // Elegant rose
+      backgroundColor = const Color(0xFFEC4899).withOpacity(0.08);
+      borderColor = const Color(0xFFEC4899).withOpacity(0.25);
+      avatarGradient = const LinearGradient(
+        colors: [Color(0xFFEC4899), Color(0xFFF472B6)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+    } else {
+      // His entries - elegant blue/teal gradient
+      primaryColor = const Color(0xFF3B82F6); // Elegant blue
+      backgroundColor = const Color(0xFF3B82F6).withOpacity(0.08);
+      borderColor = const Color(0xFF3B82F6).withOpacity(0.25);
+      avatarGradient = const LinearGradient(
+        colors: [Color(0xFF3B82F6), Color(0xFF06B6D4)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+    }
+    
+    // Toggle gradient based on completion status
+    toggleGradient = isCompleted 
+        ? AppGradients.success
+        : LinearGradient(
+            colors: [primaryColor, primaryColor.withOpacity(0.8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          );
     
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -585,15 +643,13 @@ class AccountabilityView extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      gradient: isFromPartner 
-                          ? AppGradients.warning
-                          : (isHer ? AppGradients.romantic : AppGradients.success),
+                      gradient: avatarGradient,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: primaryColor.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          color: primaryColor.withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
@@ -671,15 +727,13 @@ class AccountabilityView extends StatelessWidget {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        gradient: isCompleted 
-                            ? AppGradients.success
-                            : AppGradients.error,
+                        gradient: toggleGradient,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: (isCompleted ? AppColors.cleanDayGreen : AppColors.junkFoodRed).withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            color: primaryColor.withOpacity(0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -722,7 +776,7 @@ class AccountabilityView extends StatelessWidget {
                           children: [
                             Text(
                               isFromPartner 
-                                  ? 'Partner Distribution Fine'
+                                  ? (isHer ? 'Love Distributed for Her' : 'Love Distributed for Him')
                                   : 'Exercise Fine for ${entry.whoAte}',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: primaryColor,

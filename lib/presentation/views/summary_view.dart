@@ -697,7 +697,7 @@ class _SummaryViewState extends State<SummaryView>
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Week-over-Week Comparison',
+                  'Week-over-Week ',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
@@ -1000,30 +1000,32 @@ class _SummaryViewState extends State<SummaryView>
                     ),
                   ),
                 ],
+                const SizedBox(height: 4),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${summary.cleanPercentage.toStringAsFixed(1)}%',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: achievementColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      summary.achievementMessage,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: achievementColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.end,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${summary.cleanPercentage.toStringAsFixed(1)}%',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: achievementColor,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                summary.achievementMessage,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: achievementColor,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.end,
-              ),
-            ],
-          ),
+
         ],
       ),
     );
