@@ -30,7 +30,8 @@ class AppConstants {
   // Status Types
   static const String cleanDay = "Clean Day";
   static const String junkFine = "Junk / Fine";
-  
+  static const String cheatMeal = "Cheat Meal";
+
   // Food Type Emojis
   static const Map<String, String> foodTypeEmojis = {
     majorJunk: "🍕",

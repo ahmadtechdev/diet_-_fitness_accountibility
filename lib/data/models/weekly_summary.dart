@@ -81,7 +81,8 @@ class WeeklySummary extends Equatable {
   static DateTime _getStartOfWeek(int weekNumber) {
     final year = DateTime.now().year;
     final firstDayOfYear = DateTime(year, 1, 1);
-    final startOfWeek = firstDayOfYear.add(Duration(days: (weekNumber - 1) * 7));
+    final firstMonday = firstDayOfYear.subtract(Duration(days: firstDayOfYear.weekday - 1));
+    final startOfWeek = firstMonday.add(Duration(days: (weekNumber - 1) * 7));
     return startOfWeek;
   }
 

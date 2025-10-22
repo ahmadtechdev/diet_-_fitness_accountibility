@@ -35,7 +35,7 @@ class _AnalyticsViewState extends State<AnalyticsView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -59,13 +59,20 @@ class _AnalyticsViewState extends State<AnalyticsView>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       decoration: BoxDecoration(
         gradient: AppGradients.romantic,
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,46 +81,56 @@ class _AnalyticsViewState extends State<AnalyticsView>
             children: [
               IconButton(
                 onPressed: () => Get.back(),
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Analytics & Summary',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: AppColors.textOnPrimary,
+                  size: 20,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.all(8),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Track your fitness journey together',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  '📊 Comprehensive Analytics',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Analytics & Summary',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.textOnPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Track your fitness journey together',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.textOnPrimary.withOpacity(0.9),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              '📊 Comprehensive Analytics',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: AppColors.textOnPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),
@@ -122,20 +139,40 @@ class _AnalyticsViewState extends State<AnalyticsView>
 
   Widget _buildTabBar() {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.surfaceLight,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: AppColors.primaryPink,
-          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.romantic,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryPink.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.grey[600],
-        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        indicatorPadding: const EdgeInsets.all(4),
+        labelColor: AppColors.textOnPrimary,
+        unselectedLabelColor: AppColors.textSecondary,
+        labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+        unselectedLabelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w400,
+        ),
         tabs: const [
           Tab(text: 'Combined'),
           Tab(text: 'Individual'),
@@ -147,18 +184,19 @@ class _AnalyticsViewState extends State<AnalyticsView>
 
   Widget _buildCombinedAnalytics() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildMotivationalBanner(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildQuickStats(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildWeeklyProgress(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildMonthlyProgress(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildExerciseBreakdown(),
         ],
       ),
@@ -167,12 +205,13 @@ class _AnalyticsViewState extends State<AnalyticsView>
 
   Widget _buildIndividualAnalytics() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         children: [
-          _buildPersonAnalytics(AppConstants.him, 'Him', Colors.blue),
-          const SizedBox(height: 24),
-          _buildPersonAnalytics(AppConstants.her, 'Her', Colors.pink),
+          _buildPersonAnalytics(AppConstants.him, 'Him', AppColors.secondaryBlue),
+          const SizedBox(height: 20),
+          _buildPersonAnalytics(AppConstants.her, 'Her', AppColors.primaryPink),
         ],
       ),
     );
@@ -180,16 +219,17 @@ class _AnalyticsViewState extends State<AnalyticsView>
 
   Widget _buildPartnerDistributionAnalytics() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildDistributionSummary(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildDistributionOverview(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildDistributionBreakdown(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildDistributionTrends(),
         ],
       ),
@@ -204,57 +244,91 @@ class _AnalyticsViewState extends State<AnalyticsView>
     
     String motivationalMessage;
     Color bannerColor;
+    IconData bannerIcon;
     
     if (cleanPercentage >= 80) {
       motivationalMessage = "🌟 Amazing! You're crushing your fitness goals together!";
       bannerColor = AppColors.cleanDayGreen;
+      bannerIcon = Icons.star;
     } else if (cleanPercentage >= 60) {
       motivationalMessage = "💪 Great progress! Keep up the excellent work!";
-      bannerColor = Colors.orange;
+      bannerColor = AppColors.cheatMealOrange;
+      bannerIcon = Icons.trending_up;
     } else {
       motivationalMessage = "🚀 Every step counts! You're building healthy habits together!";
       bannerColor = AppColors.primaryPink;
+      bannerIcon = Icons.favorite;
     }
     
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [bannerColor.withOpacity(0.1), bannerColor.withOpacity(0.05)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: bannerColor.withOpacity(0.3)),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.favorite,
-            color: bannerColor,
-            size: 32,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              bannerColor.withOpacity(0.1),
+              bannerColor.withOpacity(0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 12),
-          Text(
-            motivationalMessage,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: bannerColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: bannerColor.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: bannerColor.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                bannerIcon,
+                color: bannerColor,
+                size: 28,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${cleanPercentage.toStringAsFixed(1)}% Clean Days',
-            style: TextStyle(
-              fontSize: 14,
-              color: bannerColor.withOpacity(0.8),
-              fontWeight: FontWeight.w500,
+            const SizedBox(height: 16),
+            Text(
+              motivationalMessage,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: bannerColor,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: bannerColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: bannerColor.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                '${cleanPercentage.toStringAsFixed(1)}% Clean Days',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: bannerColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -270,12 +344,14 @@ class _AnalyticsViewState extends State<AnalyticsView>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Stats',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            'Quick Stats',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -319,7 +395,7 @@ class _AnalyticsViewState extends State<AnalyticsView>
               child: _buildStatCard(
                 'Total Fines',
                 totalFines.toString(),
-                Colors.orange,
+                AppColors.cheatMealOrange,
                 Icons.fitness_center,
                 AppGradients.warning,
               ),
@@ -331,73 +407,103 @@ class _AnalyticsViewState extends State<AnalyticsView>
   }
 
   Widget _buildStatCard(String title, String value, Color color, IconData icon, LinearGradient gradient) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        children: [
-          Icon(icon, color: Colors.white, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white70,
-              fontWeight: FontWeight.w500,
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: AppColors.textOnPrimary,
+                size: 24,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: AppColors.textOnPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: AppColors.textOnPrimary.withOpacity(0.9),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildWeeklyProgress() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'This Week Progress',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.trending_up,
+                    color: AppColors.primaryPink,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'This Week Progress',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildWeekProgressBar(),
-        ],
+            const SizedBox(height: 20),
+            _buildWeekProgressBar(),
+          ],
+        ),
       ),
     );
   }
@@ -412,32 +518,90 @@ class _AnalyticsViewState extends State<AnalyticsView>
     final totalDays = weekEntries.length;
     final progress = totalDays > 0 ? cleanDays / totalDays : 0.0;
 
+    Color progressColor;
+    if (progress >= 0.8) {
+      progressColor = AppColors.cleanDayGreen;
+    } else if (progress >= 0.6) {
+      progressColor = AppColors.cheatMealOrange;
+    } else {
+      progressColor = AppColors.junkFoodRed;
+    }
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Clean Days: $cleanDays'),
-            Text('Total Days: $totalDays'),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.cleanDayGreen.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Clean Days: $cleanDays',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.cleanDayGreen,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.textSecondary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Total Days: $totalDays',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 8),
-        LinearProgressIndicator(
-          value: progress,
-          backgroundColor: Colors.grey[200],
-          valueColor: AlwaysStoppedAnimation<Color>(
-            progress >= 0.8 ? AppColors.cleanDayGreen : 
-            progress >= 0.6 ? Colors.orange : AppColors.junkFoodRed,
+        const SizedBox(height: 16),
+        Container(
+          height: 8,
+          decoration: BoxDecoration(
+            color: AppColors.border,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: FractionallySizedBox(
+            alignment: Alignment.centerLeft,
+            widthFactor: progress,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    progressColor,
+                    progressColor.withOpacity(0.8),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          '${(progress * 100).toStringAsFixed(1)}% Clean',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: progress >= 0.8 ? AppColors.cleanDayGreen : 
-                   progress >= 0.6 ? Colors.orange : AppColors.junkFoodRed,
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: progressColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: progressColor.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Text(
+            '${(progress * 100).toStringAsFixed(1)}% Clean',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: progressColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
@@ -445,33 +609,46 @@ class _AnalyticsViewState extends State<AnalyticsView>
   }
 
   Widget _buildMonthlyProgress() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Monthly Overview',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.calendar_month,
+                    color: AppColors.secondaryBlue,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Monthly Overview',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildMonthlyChart(),
-        ],
+            const SizedBox(height: 20),
+            _buildMonthlyChart(),
+          ],
+        ),
       ),
     );
   }
@@ -489,55 +666,94 @@ class _AnalyticsViewState extends State<AnalyticsView>
     return Row(
       children: [
         Expanded(
-          child: Column(
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.cleanDayGreen,
-                  shape: BoxShape.circle,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: AppGradients.success,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.cleanDayGreen.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-                child: Center(
-                  child: Text(
-                    cleanDays.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              ],
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: AppColors.textOnPrimary.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      cleanDays.toString(),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text('Clean Days', style: TextStyle(fontSize: 12)),
-            ],
+                const SizedBox(height: 12),
+                Text(
+                  'Clean Days',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.textOnPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+        const SizedBox(width: 16),
         Expanded(
-          child: Column(
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.junkFoodRed,
-                  shape: BoxShape.circle,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: AppGradients.error,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.junkFoodRed.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-                child: Center(
-                  child: Text(
-                    junkDays.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              ],
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: AppColors.textOnPrimary.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      junkDays.toString(),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text('Junk Days', style: TextStyle(fontSize: 12)),
-            ],
+                const SizedBox(height: 12),
+                Text(
+                  'Junk Days',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.textOnPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -547,63 +763,105 @@ class _AnalyticsViewState extends State<AnalyticsView>
   Widget _buildExerciseBreakdown() {
     final totalFines = _accountabilityController.totalPendingExercises;
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Exercise Breakdown',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.cheatMealOrange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.fitness_center,
+                    color: AppColors.cheatMealOrange,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Exercise Breakdown',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildExerciseItem('🔄', 'Jumping Ropes', totalFines.jumpingRopes),
-          _buildExerciseItem('🦵', 'Squats', totalFines.squats),
-          _buildExerciseItem('🤸', 'Jumping Jacks', totalFines.jumpingJacks),
-          _buildExerciseItem('🏃', 'High Knees', totalFines.highKnees),
-          _buildExerciseItem('💪', 'Pushups', totalFines.pushups),
-        ],
+            const SizedBox(height: 20),
+            _buildExerciseItem('🔄', 'Jumping Ropes', totalFines.jumpingRopes, AppColors.jumpingRopes),
+            _buildExerciseItem('🦵', 'Squats', totalFines.squats, AppColors.squats),
+            _buildExerciseItem('🤸', 'Jumping Jacks', totalFines.jumpingJacks, AppColors.jumpingJacks),
+            _buildExerciseItem('🏃', 'High Knees', totalFines.highKnees, AppColors.highKnees),
+            _buildExerciseItem('💪', 'Pushups', totalFines.pushups, AppColors.pushups),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildExerciseItem(String emoji, String name, int count) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+  Widget _buildExerciseItem(String emoji, String name, int count, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 20)),
-          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              emoji,
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.textPrimary,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          Text(
-            '$count sets',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: color.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              '$count sets',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -621,99 +879,114 @@ class _AnalyticsViewState extends State<AnalyticsView>
     final totalDays = personEntries.length;
     final cleanPercentage = totalDays > 0 ? (cleanDays / totalDays * 100) : 0.0;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  person == AppConstants.him ? Icons.male : Icons.female,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                '$displayName Analytics',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _buildPersonStatCard(
-                  'Clean Days',
-                  cleanDays.toString(),
-                  AppColors.cleanDayGreen,
-                  Icons.eco,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildPersonStatCard(
-                  'Junk Days',
-                  junkDays.toString(),
-                  AppColors.junkFoodRed,
-                  Icons.fastfood,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  'Clean Day Percentage',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: color,
-                    fontWeight: FontWeight.w600,
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color, color.withOpacity(0.8)],
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    person == AppConstants.him ? Icons.male : Icons.female,
+                    color: AppColors.textOnPrimary,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '${cleanPercentage.toStringAsFixed(1)}%',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: color,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    '$displayName Analytics',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildPersonStatCard(
+                    'Clean Days',
+                    cleanDays.toString(),
+                    AppColors.cleanDayGreen,
+                    Icons.eco,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildPersonStatCard(
+                    'Junk Days',
+                    junkDays.toString(),
+                    AppColors.junkFoodRed,
+                    Icons.fastfood,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    color.withOpacity(0.1),
+                    color.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: color.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Clean Day Percentage',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '${cleanPercentage.toStringAsFixed(1)}%',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -722,27 +995,39 @@ class _AnalyticsViewState extends State<AnalyticsView>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 12),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: color,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: color,
               fontWeight: FontWeight.w500,
             ),
@@ -763,119 +1048,153 @@ class _AnalyticsViewState extends State<AnalyticsView>
 
     final totalDistribution = himFromHer + herFromHim;
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primaryPink.withOpacity(0.1), AppColors.primaryPurple.withOpacity(0.1)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primaryPink.withOpacity(0.3)),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.share,
-                color: AppColors.primaryPink,
-                size: 28,
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Partner Distribution Summary',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primaryPink.withOpacity(0.1),
+              AppColors.primaryPurple.withOpacity(0.1),
             ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      totalDistribution.toString(),
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryPink,
-                      ),
-                    ),
-                    const Text(
-                      'Total Shared Exercises',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.border,
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      '${totalDistribution > 0 ? ((himFromHer / totalDistribution) * 100).toStringAsFixed(1) : '0.0'}%',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    const Text(
-                      'Him from Her',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.border,
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      '${totalDistribution > 0 ? ((herFromHim / totalDistribution) * 100).toStringAsFixed(1) : '0.0'}%',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.pink,
-                      ),
-                    ),
-                    const Text(
-                      'Her from Him',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: AppColors.primaryPink.withOpacity(0.3),
+            width: 1,
           ),
-        ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.share,
+                    color: AppColors.primaryPink,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Partner Distribution Summary',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColors.primaryPink.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    totalDistribution.toString(),
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      color: AppColors.primaryPink,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Total Shared Exercises',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondaryBlue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '${totalDistribution > 0 ? ((himFromHer / totalDistribution) * 100).toStringAsFixed(1) : '0.0'}%',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: AppColors.secondaryBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Him from Her',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryPink.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '${totalDistribution > 0 ? ((herFromHim / totalDistribution) * 100).toStringAsFixed(1) : '0.0'}%',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: AppColors.primaryPink,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Her from Him',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -889,86 +1208,111 @@ class _AnalyticsViewState extends State<AnalyticsView>
         .where((e) => e.whoAte == AppConstants.her && e.isFromPartner)
         .fold(0, (sum, e) => sum + e.fine.totalExercises);
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Partner Distribution Overview',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPurple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.analytics,
+                    color: AppColors.primaryPurple,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Partner Distribution Overview',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDistributionCard(
-                  'Him gets from Her',
-                  himFromHer.toString(),
-                  Colors.blue,
-                  Icons.arrow_downward,
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDistributionCard(
+                    'Him gets from Her',
+                    himFromHer.toString(),
+                    AppColors.secondaryBlue,
+                    Icons.arrow_downward,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildDistributionCard(
-                  'Her gets from Him',
-                  herFromHim.toString(),
-                  Colors.pink,
-                  Icons.arrow_upward,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildDistributionCard(
+                    'Her gets from Him',
+                    herFromHim.toString(),
+                    AppColors.primaryPink,
+                    Icons.arrow_upward,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildDistributionCard(String title, String value, Color color, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
               color: color,
+              size: 24,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: color,
               fontWeight: FontWeight.w500,
             ),
@@ -980,34 +1324,47 @@ class _AnalyticsViewState extends State<AnalyticsView>
   }
 
   Widget _buildDistributionBreakdown() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Distribution Breakdown',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryTeal.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.area_chart,
+                    color: AppColors.secondaryTeal,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Distribution Breakdown',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildDistributionItem('Him from Her', Colors.blue, AppConstants.him, true),
-          _buildDistributionItem('Her from Him', Colors.pink, AppConstants.her, true),
-        ],
+            const SizedBox(height: 20),
+            _buildDistributionItem('Him from Her', AppColors.secondaryBlue, AppConstants.him, true),
+            _buildDistributionItem('Her from Him', AppColors.primaryPink, AppConstants.her, true),
+          ],
+        ),
       ),
     );
   }
@@ -1024,44 +1381,82 @@ class _AnalyticsViewState extends State<AnalyticsView>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: color,
+              gradient: LinearGradient(
+                colors: [color, color.withOpacity(0.8)],
+              ),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Icon(
               person == AppConstants.him ? Icons.male : Icons.female,
-              color: Colors.white,
+              color: AppColors.textOnPrimary,
+              size: 24,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: color,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  '$totalFines fines • $totalExercises exercises',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.textSecondary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$totalFines fines',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$totalExercises exercises',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1072,33 +1467,46 @@ class _AnalyticsViewState extends State<AnalyticsView>
   }
 
   Widget _buildDistributionTrends() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Weekly Distribution Trends',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.cheatMealOrange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.trending_up,
+                    color: AppColors.cheatMealOrange,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Weekly Distribution Trends',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildWeeklyTrendChart(),
-        ],
+            const SizedBox(height: 20),
+            _buildWeeklyTrendChart(),
+          ],
+        ),
       ),
     );
   }
@@ -1122,20 +1530,30 @@ class _AnalyticsViewState extends State<AnalyticsView>
             .fold(0, (sum, e) => sum + e.fine.totalExercises);
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(8),
+            color: AppColors.backgroundLight,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.border,
+              width: 1,
+            ),
           ),
           child: Row(
             children: [
-              Text(
-                'Week $week',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryPink.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Week $week',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.primaryPink,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -1143,11 +1561,11 @@ class _AnalyticsViewState extends State<AnalyticsView>
                 child: Row(
                   children: [
                     Expanded(
-                      child: _buildTrendBar('Him', himFromHer, Colors.blue),
+                      child: _buildTrendBar('Him', himFromHer, AppColors.secondaryBlue),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: _buildTrendBar('Her', herFromHim, Colors.pink),
+                      child: _buildTrendBar('Her', herFromHim, AppColors.primaryPink),
                     ),
                   ],
                 ),
@@ -1163,34 +1581,55 @@ class _AnalyticsViewState extends State<AnalyticsView>
     final maxValue = 50; // Adjust based on your data
     final height = (value / maxValue * 40).clamp(4.0, 40.0);
     
-    return Column(
-      children: [
-        Text(
-          value.toString(),
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
         ),
-        const SizedBox(height: 4),
-        Container(
-          width: double.infinity,
-          height: height,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value.toString(),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: AppColors.textSecondary,
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            height: height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color, color.withOpacity(0.8)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

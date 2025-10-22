@@ -161,11 +161,20 @@ class ExerciseFine extends Equatable {
     required this.pushups,
   });
 
-  // Helper method to get week number
+  // Helper method to get week number using ISO week standard (Monday start)
   static int _getWeekNumber(DateTime date) {
-    final firstDayOfYear = DateTime(date.year, 1, 1);
-    final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
-    return (daysSinceFirstDay / 7).floor() + 1;
+    // Get the Monday of the week containing the date
+    final mondayOfWeek = date.subtract(Duration(days: date.weekday - 1));
+    
+    // Get the Monday of the first week of the year
+    final firstMondayOfYear = DateTime(date.year, 1, 1);
+    final firstMonday = firstMondayOfYear.subtract(Duration(days: firstMondayOfYear.weekday - 1));
+    
+    // Calculate weeks between first Monday and current Monday
+    final daysBetween = mondayOfWeek.difference(firstMonday).inDays;
+    final weekNumber = (daysBetween / 7).floor() + 1;
+    
+    return weekNumber;
   }
 
   // Legacy method for backward compatibility
@@ -408,22 +417,23 @@ class ExerciseFine extends Equatable {
     }
 
     print('   Distribution: Him ${(himPercentage * 100).toInt()}%, Her ${(herPercentage * 100).toInt()}%');
+    print('   Base Exercises: JR=$baseJumpingRopes, S=$baseSquats, JJ=$baseJumpingJacks, HK=$baseHighKnees, P=$basePushups');
 
-    // Create distributed fines
+    // Create distributed fines with proper whole number allocation
     final himFine = ExerciseFine(
-      jumpingRopes: (baseJumpingRopes * himPercentage).round(),
-      squats: (baseSquats * himPercentage).round(),
-      jumpingJacks: (baseJumpingJacks * himPercentage).round(),
-      highKnees: (baseHighKnees * himPercentage).round(),
-      pushups: (basePushups * himPercentage).round(),
+      jumpingRopes: _distributeExercises(baseJumpingRopes, himPercentage, herPercentage, true),
+      squats: _distributeExercises(baseSquats, himPercentage, herPercentage, true),
+      jumpingJacks: _distributeExercises(baseJumpingJacks, himPercentage, herPercentage, true),
+      highKnees: _distributeExercises(baseHighKnees, himPercentage, herPercentage, true),
+      pushups: _distributeExercises(basePushups, himPercentage, herPercentage, true),
     );
 
     final herFine = ExerciseFine(
-      jumpingRopes: (baseJumpingRopes * herPercentage).round(),
-      squats: (baseSquats * herPercentage).round(),
-      jumpingJacks: (baseJumpingJacks * herPercentage).round(),
-      highKnees: (baseHighKnees * herPercentage).round(),
-      pushups: (basePushups * herPercentage).round(),
+      jumpingRopes: _distributeExercises(baseJumpingRopes, himPercentage, herPercentage, false),
+      squats: _distributeExercises(baseSquats, himPercentage, herPercentage, false),
+      jumpingJacks: _distributeExercises(baseJumpingJacks, himPercentage, herPercentage, false),
+      highKnees: _distributeExercises(baseHighKnees, himPercentage, herPercentage, false),
+      pushups: _distributeExercises(basePushups, himPercentage, herPercentage, false),
     );
 
     print('   Final Fines: Him ${himFine.totalExercises}, Her ${herFine.totalExercises}');
@@ -432,6 +442,71 @@ class ExerciseFine extends Equatable {
       'him': himFine,
       'her': herFine,
     };
+  }
+
+  // Helper method to distribute exercises with proper whole number allocation
+  static int _distributeExercises(int totalExercises, double himPercentage, double herPercentage, bool isForHim) {
+    if (totalExercises == 0) return 0;
+    
+    // Calculate the exact decimal values
+    final himExact = totalExercises * himPercentage;
+    final herExact = totalExercises * herPercentage;
+    
+    // Round to get whole numbers
+    final himRounded = himExact.round();
+    final herRounded = herExact.round();
+    
+    print('     Exercise Distribution: Total=$totalExercises, Him=${himExact.toStringAsFixed(1)}→$himRounded, Her=${herExact.toStringAsFixed(1)}→$herRounded');
+    
+    // If the sum of rounded values equals the total, we're good
+    if (himRounded + herRounded == totalExercises) {
+      final result = isForHim ? himRounded : herRounded;
+      print('     ✅ Perfect distribution: ${isForHim ? 'Him' : 'Her'} gets $result');
+      return result;
+    }
+    
+    // If the sum is less than total, distribute the remainder
+    if (himRounded + herRounded < totalExercises) {
+      final remainder = totalExercises - (himRounded + herRounded);
+      print('     📈 Adding remainder $remainder to higher percentage person');
+      // Give the remainder to the person with the higher percentage
+      if (isForHim && himPercentage >= herPercentage) {
+        final result = himRounded + remainder;
+        print('     ✅ Him gets remainder: $himRounded + $remainder = $result');
+        return result;
+      } else if (!isForHim && herPercentage > himPercentage) {
+        final result = herRounded + remainder;
+        print('     ✅ Her gets remainder: $herRounded + $remainder = $result');
+        return result;
+      } else {
+        final result = isForHim ? himRounded : herRounded;
+        print('     ✅ ${isForHim ? 'Him' : 'Her'} gets original: $result');
+        return result;
+      }
+    }
+    
+    // If the sum is more than total, adjust by reducing the person with lower percentage
+    if (himRounded + herRounded > totalExercises) {
+      final excess = (himRounded + herRounded) - totalExercises;
+      print('     📉 Reducing excess $excess from lower percentage person');
+      if (isForHim && himPercentage <= herPercentage) {
+        final result = (himRounded - excess).clamp(0, totalExercises);
+        print('     ✅ Him reduced: $himRounded - $excess = $result');
+        return result;
+      } else if (!isForHim && herPercentage < himPercentage) {
+        final result = (herRounded - excess).clamp(0, totalExercises);
+        print('     ✅ Her reduced: $herRounded - $excess = $result');
+        return result;
+      } else {
+        final result = isForHim ? himRounded : herRounded;
+        print('     ✅ ${isForHim ? 'Him' : 'Her'} gets original: $result');
+        return result;
+      }
+    }
+    
+    final result = isForHim ? himRounded : herRounded;
+    print('     ✅ Default: ${isForHim ? 'Him' : 'Her'} gets $result');
+    return result;
   }
 
   int get totalExercises => jumpingRopes + squats + jumpingJacks + highKnees + pushups;

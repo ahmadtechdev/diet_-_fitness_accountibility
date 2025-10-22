@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../core/utils/colors.dart';
 import '../../app/routes/app_routes.dart';
 import '../controllers/accountability_controller.dart';
+import '../views/comprehensive_analytics_view.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -141,28 +142,21 @@ class AppDrawer extends StatelessWidget {
                     Get.offAllNamed(AppRoutes.home);
                   },
                 ),
-                _buildDrawerItem(
-                  icon: Icons.restaurant,
-                  title: 'Daily Log',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Get.toNamed(AppRoutes.dailyLog);
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.check_circle,
-                  title: 'Accountability',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Get.toNamed(AppRoutes.accountability);
-                  },
-                ),
+              
                 _buildDrawerItem(
                   icon: Icons.analytics,
                   title: 'Analytics & Summary',
                   onTap: () {
                     Navigator.pop(context);
                     Get.toNamed(AppRoutes.analytics);
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.trending_up,
+                  title: 'Comprehensive Analytics',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Get.to(() => const ComprehensiveAnalyticsView());
                   },
                 ),
                 _buildDrawerItem(

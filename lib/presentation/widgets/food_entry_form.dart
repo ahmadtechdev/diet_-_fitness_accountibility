@@ -326,25 +326,46 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Food Name',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+        Row(
+          children: [
+            Text(
+              'Food Name',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppColors.textSecondary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Optional',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _foodNameController,
-          decoration: const InputDecoration(
-            hintText: 'e.g., Pizza, Salad, Biryani...',
-            prefixIcon: Icon(Icons.restaurant, color: AppColors.primaryPink),
+          decoration: InputDecoration(
+            hintText: 'e.g., Pizza, Salad, Biryani... (Leave empty to use food type)',
+            prefixIcon: const Icon(Icons.restaurant, color: AppColors.primaryPink),
+            helperText: 'If left empty, will use the selected food type as the name',
+            helperStyle: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
           ),
           validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter food name';
-            }
+            // No validation needed - field is optional
             return null;
           },
         ),
@@ -860,12 +881,17 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
     if (_formKey.currentState!.validate()) {
       final quantity = double.parse(_quantityController.text);
       
+      // Use food type as name if food name is empty
+      final foodName = _foodNameController.text.trim().isEmpty 
+          ? _selectedFoodType 
+          : _foodNameController.text.trim();
+      
       final entry = isEditing
           ? widget.initialEntry!.copyWith(
               date: _selectedDate,
               whoAte: _selectedWhoAte,
               foodType: _selectedFoodType,
-              foodName: _foodNameController.text,
+              foodName: foodName,
               quantity: quantity,
               notes: _notesController.text,
             )
@@ -873,7 +899,7 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
               date: _selectedDate,
               whoAte: _selectedWhoAte,
               foodType: _selectedFoodType,
-              foodName: _foodNameController.text,
+              foodName: foodName,
               quantity: quantity,
               notes: _notesController.text,
             );

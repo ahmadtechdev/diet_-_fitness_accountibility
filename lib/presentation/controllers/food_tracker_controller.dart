@@ -282,11 +282,20 @@ class FoodTrackerController extends GetxController {
     return messages[DateTime.now().millisecondsSinceEpoch % messages.length];
   }
   
-  // Helper method to get week number
+  // Helper method to get week number using ISO week standard (Monday start)
   int _getWeekNumber(DateTime date) {
-    final firstDayOfYear = DateTime(date.year, 1, 1);
-    final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
-    return (daysSinceFirstDay / 7).floor() + 1;
+    // Get the Monday of the week containing the date
+    final mondayOfWeek = date.subtract(Duration(days: date.weekday - 1));
+    
+    // Get the Monday of the first week of the year
+    final firstMondayOfYear = DateTime(date.year, 1, 1);
+    final firstMonday = firstMondayOfYear.subtract(Duration(days: firstMondayOfYear.weekday - 1));
+    
+    // Calculate weeks between first Monday and current Monday
+    final daysBetween = mondayOfWeek.difference(firstMonday).inDays;
+    final weekNumber = (daysBetween / 7).floor() + 1;
+    
+    return weekNumber;
   }
   
   // Sync with accountability controller

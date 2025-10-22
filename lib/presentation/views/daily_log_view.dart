@@ -18,6 +18,7 @@ class DailyLogView extends StatelessWidget {
     return MainLayout(
       currentIndex: 1,
       child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -33,19 +34,19 @@ class DailyLogView extends StatelessWidget {
           child: SafeArea(
             child: Column(
               children: [
-                _buildHeader(),
+                _buildHeader(context),
                 Expanded(
                   child: Container(
                     decoration: const BoxDecoration(
                       color: AppColors.backgroundLight,
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                        topRight: Radius.circular(24),
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
                       ),
                     ),
                     child: Obx(() => controller.isLoading
                         ? const Center(child: CircularProgressIndicator())
-                        : _buildContent(controller)),
+                        : _buildContent(context, controller)),
                   ),
                 ),
               ],
@@ -54,61 +55,70 @@ class DailyLogView extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => _showAddEntryDialog(context, controller),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text(
+          icon: const Icon(Icons.add, color: AppColors.textOnPrimary),
+          label: Text(
             'Add Entry',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: AppColors.textOnPrimary,
+              fontWeight: FontWeight.w500,
             ),
           ),
           backgroundColor: AppColors.primaryPink,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(AppConstants.defaultPadding),
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: Row(
         children: [
           IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.textOnPrimary.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
-          const SizedBox(width: 8),
-          const Expanded(
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Daily Food Log',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.textOnPrimary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   'Track your journey together 💕',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white70,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textOnPrimary.withOpacity(0.8),
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.textOnPrimary.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
-              Icons.restaurant,
-              color: Colors.white,
+              Icons.restaurant_menu,
+              color: AppColors.textOnPrimary,
               size: 24,
             ),
           ),
@@ -117,260 +127,427 @@ class DailyLogView extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(FoodTrackerController controller) {
+  Widget _buildContent(BuildContext context, FoodTrackerController controller) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppConstants.defaultPadding),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDateSelector(controller),
+          _buildDateSelector(context, controller),
           const SizedBox(height: 24),
-          _buildTodayStats(controller),
+          _buildTodayStats(context, controller),
           const SizedBox(height: 24),
-          _buildEntriesList(controller),
-          const SizedBox(height: 100), // Space for FAB
+          _buildEntriesList(context, controller),
         ],
       ),
     );
   }
 
-  Widget _buildDateSelector(FoodTrackerController controller) {
-    return RomanticCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.calendar_today, color: AppColors.primaryPink),
-              SizedBox(width: 8),
-              Text(
-                'Select Date',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+  Widget _buildDateSelector(BuildContext context, FoodTrackerController controller) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.calendar_today,
+                    color: AppColors.primaryPink,
+                    size: 20,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Builder(
-            builder: (context) => InkWell(
+                const SizedBox(width: 12),
+                Text(
+                  'Select Date',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            InkWell(
               onTap: () => _selectDate(context, controller),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.primaryPink.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.primaryPink.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryPink.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primaryPink.withOpacity(0.2),
+                    width: 1,
+                  ),
                 ),
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     const Icon(
                       Icons.date_range,
                       color: AppColors.primaryPink,
+                      size: 20,
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      DateFormat('EEEE, MMMM d, y').format(controller.selectedDate),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary,
+                    Expanded(
+                      child: Text(
+                        DateFormat('EEEE, MMMM d, y').format(controller.selectedDate),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    // const Spacer(),
                     const Icon(
                       Icons.arrow_drop_down,
                       color: AppColors.primaryPink,
+                      size: 20,
                     ),
                   ],
                 ),
               ),
             ),
-          )),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTodayStats(FoodTrackerController controller) {
+  Widget _buildTodayStats(BuildContext context, FoodTrackerController controller) {
     final todayEntries = controller.getEntriesForDate(controller.selectedDate);
     final cleanEntries = todayEntries.where((e) => e.status == AppConstants.cleanDay).length;
     final junkEntries = todayEntries.where((e) => e.status == AppConstants.junkFine).length;
+    final cheatEntries = todayEntries.where((e) => e.status == AppConstants.cheatMeal).length;
     final totalFines = todayEntries.fold(0, (sum, entry) => sum + entry.fine.totalExercises);
 
-    return Row(
-      children: [
-        Expanded(
-          child: _buildStatCard(
-            'Clean',
-            cleanEntries.toString(),
-            AppColors.cleanDayGreen,
-            Icons.eco,
-          ),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.analytics,
+                    color: AppColors.primaryPink,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Today\'s Summary',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isSmallScreen = constraints.maxWidth < 400;
+                if (isSmallScreen) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              'Clean',
+                              cleanEntries.toString(),
+                              AppColors.cleanDayGreen,
+                              Icons.eco,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              'Junk',
+                              junkEntries.toString(),
+                              AppColors.junkFoodRed,
+                              Icons.warning,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              'Cheat',
+                              cheatEntries.toString(),
+                              AppColors.cheatMealOrange,
+                              Icons.cake,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              'Fines',
+                              totalFines.toString(),
+                              AppColors.primaryPurple,
+                              Icons.fitness_center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          'Clean',
+                          cleanEntries.toString(),
+                          AppColors.cleanDayGreen,
+                          Icons.eco,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          'Junk',
+                          junkEntries.toString(),
+                          AppColors.junkFoodRed,
+                          Icons.warning,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          'Cheat',
+                          cheatEntries.toString(),
+                          AppColors.cheatMealOrange,
+                          Icons.cake,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          'Fines',
+                          totalFines.toString(),
+                          AppColors.primaryPurple,
+                          Icons.fitness_center,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            'Junk',
-            junkEntries.toString(),
-            AppColors.junkFoodRed,
-            Icons.warning,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            'Junk',
-            junkEntries.toString(),
-            AppColors.cheatMealOrange,
-            Icons.cake,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            'Fines',
-            totalFines.toString(),
-            AppColors.primaryPurple,
-            Icons.fitness_center,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Widget _buildStatCard(String title, String value, Color color, IconData icon) {
+  Widget _buildStatCard(BuildContext context, String title, String value, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withOpacity(0.2),
+          width: 1,
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 24),
+          Icon(icon, color: color, size: 20),
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               color: color,
+              fontWeight: FontWeight.w600,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: color.withOpacity(0.8),
               fontWeight: FontWeight.w500,
             ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEntriesList(FoodTrackerController controller) {
+  Widget _buildEntriesList(BuildContext context, FoodTrackerController controller) {
     final todayEntries = controller.getEntriesForDate(controller.selectedDate);
     
-    return RomanticCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.list, color: AppColors.primaryPink),
-              const SizedBox(width: 8),
-              const Text(
-                'Today\'s Entries',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.list_alt,
+                    color: AppColors.primaryPink,
+                    size: 20,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Text(
-                '${todayEntries.length} entries',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
+                const SizedBox(width: 12),
+                Text(
+                  'Today\'s Entries',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (todayEntries.isEmpty)
-            Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.restaurant_menu,
-                      size: 48,
-                      color: AppColors.textSecondary,
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPink.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${todayEntries.length} entries',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AppColors.primaryPink,
+                      fontWeight: FontWeight.w500,
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      'No entries for this date',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (todayEntries.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundLight,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
+                ),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.textSecondary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Icon(
+                          Icons.restaurant_menu,
+                          size: 32,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Tap the + button to add your first entry!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
+                      const SizedBox(height: 16),
+                      Text(
+                        'No entries for this date',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tap the + button to add your first entry!',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          else
-            ...todayEntries.map((entry) => _buildEntryItem(entry, controller)),
-        ],
+              )
+            else
+              ...todayEntries.map((entry) => _buildEntryItem(context, entry, controller)),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildEntryItem(entry, FoodTrackerController controller) {
+  Widget _buildEntryItem(BuildContext context, entry, FoodTrackerController controller) {
+    final statusColor = _getStatusColor(entry.status);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _getStatusColor(entry.status).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: statusColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _getStatusColor(entry.status).withOpacity(0.3),
+          color: statusColor.withOpacity(0.2),
+          width: 1,
         ),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: _getStatusColor(entry.status).withOpacity(0.2),
-              borderRadius: BorderRadius.circular(8),
+              color: statusColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               entry.foodTypeEmoji,
@@ -384,52 +561,57 @@ class DailyLogView extends StatelessWidget {
               children: [
                 Text(
                   entry.foodName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      Text(
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryPink.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
                         entry.whoAte,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.primaryPink,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(entry.status).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          '${entry.statusEmoji} ${entry.status}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _getStatusColor(entry.status),
-                            fontWeight: FontWeight.w600,
-                          ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${entry.statusEmoji} ${entry.status}',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 if (entry.notes.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
                     entry.notes,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                       fontStyle: FontStyle.italic,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ],
@@ -447,8 +629,7 @@ class DailyLogView extends StatelessWidget {
                   ),
                   child: Text(
                     '${entry.fine.totalExercises}',
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.junkFoodRed,
                     ),
@@ -459,18 +640,29 @@ class DailyLogView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    onPressed: () => _editEntry(entry, controller),
-                    icon: const Icon(Icons.edit, size: 16),
+                    onPressed: () => _editEntry(context, entry, controller),
+                    icon: const Icon(Icons.edit_outlined, size: 18),
                     color: AppColors.textSecondary,
-                    constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.textSecondary.withOpacity(0.1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      minimumSize: const Size(32, 32),
+                    ),
                   ),
+                  const SizedBox(width: 4),
                   IconButton(
-                    onPressed: () => _deleteEntry(entry, controller),
-                    icon: const Icon(Icons.delete, size: 16),
+                    onPressed: () => _deleteEntry(context, entry, controller),
+                    icon: const Icon(Icons.delete_outline, size: 18),
                     color: AppColors.errorRed,
-                    constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.errorRed.withOpacity(0.1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      minimumSize: const Size(32, 32),
+                    ),
                   ),
                 ],
               ),
@@ -503,8 +695,8 @@ class DailyLogView extends StatelessWidget {
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
               primary: AppColors.primaryPink,
-              onPrimary: Colors.white,
-              surface: Colors.white,
+              onPrimary: AppColors.textOnPrimary,
+              surface: AppColors.surfaceLight,
               onSurface: AppColors.textPrimary,
             ),
           ),
@@ -523,6 +715,12 @@ class DailyLogView extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
       builder: (context) => FoodEntryForm(
         selectedDate: controller.selectedDate,
         onSave: (entry) {
@@ -540,11 +738,17 @@ class DailyLogView extends StatelessWidget {
     );
   }
 
-  void _editEntry(entry, FoodTrackerController controller) {
+  void _editEntry(BuildContext context, entry, FoodTrackerController controller) {
     showModalBottomSheet(
-      context: Get.context!,
+      context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
       builder: (context) => FoodEntryForm(
         selectedDate: entry.date,
         initialEntry: entry,
@@ -556,24 +760,58 @@ class DailyLogView extends StatelessWidget {
     );
   }
 
-  void _deleteEntry(entry, FoodTrackerController controller) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Delete Entry'),
-        content: Text('Are you sure you want to delete "${entry.foodName}"?'),
+  void _deleteEntry(BuildContext context, entry, FoodTrackerController controller) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        backgroundColor: AppColors.surfaceLight,
+        title: Text(
+          'Delete Entry',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to delete "${entry.foodName}"?',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppColors.textPrimary,
+          ),
+        ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.textSecondary,
+            ),
+            child: Text(
+              'Cancel',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               controller.deleteFoodEntry(entry.id);
-              Get.back();
+              Navigator.pop(context);
             },
-            child: const Text(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.errorRed,
+              foregroundColor: AppColors.textOnPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: Text(
               'Delete',
-              style: TextStyle(color: AppColors.errorRed),
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: AppColors.textOnPrimary,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

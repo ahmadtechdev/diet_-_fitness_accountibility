@@ -19,108 +19,106 @@ class HomeView extends StatelessWidget {
     return MainLayout(
       currentIndex: 0,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: AppGradients.romantic,
-          ),
-          child: SafeArea(
-            child: Obx(() => controller.isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.white))
-                : _buildContent(controller)),
-          ),
+        backgroundColor: AppColors.backgroundLight,
+        body: SafeArea(
+          child: Obx(() => controller.isLoading
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryPink,
+                    strokeWidth: 2,
+                  ),
+                )
+              : _buildContent(context, controller)),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => Get.toNamed(AppRoutes.dailyLog),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text(
-            'Log Food',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          backgroundColor: AppColors.primaryPink,
-        ),
+        floatingActionButton: _buildFloatingActionButton(context),
       ),
     );
   }
 
-  Widget _buildContent(FoodTrackerController controller) {
+  Widget _buildContent(BuildContext context, FoodTrackerController controller) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppConstants.defaultPadding),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           const SizedBox(height: 24),
-          _buildMotivationalBanner(controller),
+          _buildMotivationalBanner(context, controller),
           const SizedBox(height: 24),
-          _buildQuickStats(controller),
+          _buildQuickStats(context, controller),
           const SizedBox(height: 24),
-          _buildTodaySection(controller),
+          _buildTodaySection(context, controller),
           const SizedBox(height: 24),
-          _buildWeeklyProgress(controller),
+          _buildWeeklyProgress(context, controller),
           const SizedBox(height: 100), // Space for FAB
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(
-                Icons.favorite,
-                color: Colors.white,
-                size: 32,
-              ),
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: AppGradients.romantic,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryPink.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.textOnPrimary.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppConstants.appName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    AppConstants.appTagline,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
-                    ),
-                  ),
-                ],
-              ),
+            child: const Icon(
+              Icons.favorite,
+              color: AppColors.textOnPrimary,
+              size: 28,
             ),
-          ],
-        ),
-      ],
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppConstants.appName,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.textOnPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  AppConstants.appTagline,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textOnPrimary.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildMotivationalBanner(FoodTrackerController controller) {
+  Widget _buildMotivationalBanner(BuildContext context, FoodTrackerController controller) {
     return MotivationalBanner(
       message: controller.getRandomMotivationalMessage(),
     );
   }
 
-  Widget _buildQuickStats(FoodTrackerController controller) {
+  Widget _buildQuickStats(BuildContext context, FoodTrackerController controller) {
     return Row(
       children: [
         Expanded(
@@ -146,122 +144,136 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildTodaySection(FoodTrackerController controller) {
+  Widget _buildTodaySection(BuildContext context, FoodTrackerController controller) {
     final todayEntries = controller.todayEntries;
     
-    return RomanticCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.today, color: AppColors.primaryPink),
-              const SizedBox(width: 8),
-              const Text(
-                'Today\'s Journey',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.today, 
+                  color: AppColors.primaryPink,
+                  size: 24,
                 ),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: () => Get.toNamed(AppRoutes.dailyLog),
-                child: const Text('View All'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (todayEntries.isEmpty)
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.cleanDayLight,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.eco,
-                      size: 48,
-                      color: AppColors.cleanDayGreen,
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'No entries today yet!',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                const SizedBox(width: 12),
+                Text(
+                  'Today\'s Journey',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () => Get.toNamed(AppRoutes.dailyLog),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primaryPink,
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: const Text('View All'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            if (todayEntries.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.cleanDayLight,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.eco,
+                        size: 48,
                         color: AppColors.cleanDayGreen,
                       ),
-                    ),
-                    Text(
-                      'Start your healthy journey! 💚',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
+                      const SizedBox(height: 12),
+                      Text(
+                        'No entries today yet!',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColors.cleanDayGreen,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        'Start your healthy journey! 💚',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          else
-            ...todayEntries.take(3).map((entry) => _buildEntryItem(entry)),
-          if (todayEntries.length > 3)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Center(
-                child: Text(
-                  '+${todayEntries.length - 3} more entries',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
+              )
+            else
+              ...todayEntries.take(3).map((entry) => _buildEntryItem(context, entry)),
+            if (todayEntries.length > 3)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Text(
+                    '+${todayEntries.length - 3} more entries',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildEntryItem(entry) {
+  Widget _buildEntryItem(BuildContext context, entry) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: _getStatusColor(entry.status).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _getStatusColor(entry.status).withOpacity(0.3),
+          width: 1,
         ),
       ),
       child: Row(
         children: [
           Text(
             entry.foodTypeEmoji,
-            style: const TextStyle(fontSize: 24),
+            style: const TextStyle(fontSize: 28),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   entry.foodName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   '${entry.whoAte} • ${entry.statusEmoji} ${entry.status}',
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -270,17 +282,16 @@ class HomeView extends StatelessWidget {
           ),
           if (entry.fine.totalExercises > 0)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: AppColors.junkFoodRed.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '${entry.fine.totalExercises}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppColors.junkFoodRed,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -289,147 +300,159 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildWeeklyProgress(FoodTrackerController controller) {
+  Widget _buildWeeklyProgress(BuildContext context, FoodTrackerController controller) {
     final currentWeek = controller.currentWeekSummary;
     
-    return RomanticCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      color: AppColors.surfaceLight,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                const Icon(Icons.calendar_view_week, color: AppColors.primaryPink),
-                const SizedBox(width: 8),
-                const Text(
-                  'This Week\'s Progress',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                Icon(
+                  Icons.calendar_view_week,
+                  color: AppColors.primaryPink,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'This Week\'s ',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                // const Spacer(),
+                const Spacer(),
                 TextButton(
                   onPressed: () => Get.toNamed(AppRoutes.summary),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primaryPink,
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
                   child: const Text('View Details'),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          if (currentWeek != null) ...[
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: _buildProgressItem(
-                    'Clean Days',
-                    '${currentWeek.cleanDays}/${currentWeek.totalDays}',
-                    currentWeek.cleanPercentage / 100,
-                    AppColors.cleanDayGreen,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 1,
-                  child: _buildProgressItem(
-                    'Combined Fines',
-                    '${currentWeek.combinedFine.totalExercises}',
-                    (currentWeek.combinedFine.totalExercises / 100).clamp(0.0, 1.0),
-                    AppColors.junkFoodRed,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: _getAchievementGradient(currentWeek.achievementLevel),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
+            const SizedBox(height: 20),
+            if (currentWeek != null) ...[
+              Row(
                 children: [
-                  const Icon(
-                    Icons.emoji_events,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          currentWeek.achievementMessage,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          '${currentWeek.cleanPercentage.toStringAsFixed(1)}% Clean Days',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
+                    flex: 1,
+                    child: _buildProgressItem(
+                      context,
+                      'Clean Days',
+                      '${currentWeek.cleanDays}/${currentWeek.totalDays}',
+                      currentWeek.cleanPercentage / 100,
+                      AppColors.cleanDayGreen,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 1,
+                    child: _buildProgressItem(
+                      context,
+                      'Combined Fines',
+                      '${currentWeek.combinedFine.totalExercises}',
+                      (currentWeek.combinedFine.totalExercises / 100).clamp(0.0, 1.0),
+                      AppColors.junkFoodRed,
                     ),
                   ),
                 ],
               ),
-            ),
-          ] else
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
-                borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: _getAchievementGradient(currentWeek.achievementLevel),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.emoji_events,
+                      color: AppColors.textOnPrimary,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            currentWeek.achievementMessage,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: AppColors.textOnPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${currentWeek.cleanPercentage.toStringAsFixed(1)}% Clean Days',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textOnPrimary.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: const Center(
-                child: Text(
-                  'No data for this week yet!',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 16,
+            ] else
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundLight,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Text(
+                    'No data for this week yet!',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildProgressItem(String title, String value, double progress, Color color) {
+  Widget _buildProgressItem(BuildContext context, String title, String value, double progress, Color color) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             color: color,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         LinearProgressIndicator(
           value: progress,
           backgroundColor: color.withOpacity(0.2),
           valueColor: AlwaysStoppedAnimation<Color>(color),
+          minHeight: 6,
         ),
       ],
     );
@@ -456,5 +479,28 @@ class HomeView extends StatelessWidget {
       default:
         return AppGradients.error;
     }
+  }
+
+  Widget _buildFloatingActionButton(BuildContext context) {
+    return FloatingActionButton.extended(
+      onPressed: () => Get.toNamed(AppRoutes.dailyLog),
+      icon: const Icon(
+        Icons.add,
+        color: AppColors.textOnPrimary,
+        size: 24,
+      ),
+      label: Text(
+        'Log Food',
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: AppColors.textOnPrimary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      backgroundColor: AppColors.primaryPink,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+    );
   }
 }
