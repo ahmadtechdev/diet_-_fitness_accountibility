@@ -118,13 +118,6 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
             ),
             const SizedBox(height: 16),
             
-            // Weekly Meal Limits
-            _buildWeeklyMealLimits(),
-            
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 20),
-            
             // Distribution Rules
             _buildDistributionRule(
               context,
@@ -175,13 +168,6 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
             ),
             
             const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 20),
-            
-            // Reward System
-            _buildRewardSystem(),
-            
-            const SizedBox(height: 16),
             
             // Summary
             Container(
@@ -198,250 +184,15 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  _buildSummaryRow('Weekly Limits:', 'Him: ${_rules.himWeeklyJunkMealLimit}, Her: ${_rules.herWeeklyJunkMealLimit}'),
-                  _buildSummaryRow('Him eats >limit/week:', '${_rules.himEatsMoreThanOnceHimPercentage}% Him, ${_rules.himEatsMoreThanOnceHerPercentage}% Her'),
-                  _buildSummaryRow('Her eats:', '${_rules.herEatsHerPercentage}% Her, ${_rules.herEatsHimPercentage}% Him'),
+                  _buildSummaryRow('Him eats junk:', '${_rules.himEatsMoreThanOnceHimPercentage}% Him, ${_rules.himEatsMoreThanOnceHerPercentage}% Her'),
+                  _buildSummaryRow('Her eats junk:', '${_rules.herEatsHerPercentage}% Her, ${_rules.herEatsHimPercentage}% Him'),
                   _buildSummaryRow('Both eat:', '${_rules.bothEatPercentage}% each'),
-                  if (_rules.rewardSystemEnabled)
-                    _buildSummaryRow('Reward System:', '${_rules.junkFreeWeekReward} extra meals for ${_rules.rewardExpiryDays} days'),
                 ],
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildWeeklyMealLimits() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Weekly Junk Meal Limits',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            // Him's limit
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.male, color: Colors.blue, size: 20),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Him',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: 'Meals per week',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            ),
-                            controller: TextEditingController(text: _rules.himWeeklyJunkMealLimit.toString()),
-                            onChanged: (value) {
-                              final intValue = int.tryParse(value) ?? 1;
-                              if (intValue >= 0 && intValue <= 7) {
-                                setState(() {
-                                  _rules = _rules.copyWith(himWeeklyJunkMealLimit: intValue);
-                                });
-                                _saveChanges();
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            // Her's limit
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.pink.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.pink.withOpacity(0.3)),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.female, color: Colors.pink, size: 20),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Her',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.pink,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: 'Meals per week',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            ),
-                            controller: TextEditingController(text: _rules.herWeeklyJunkMealLimit.toString()),
-                            onChanged: (value) {
-                              final intValue = int.tryParse(value) ?? 1;
-                              if (intValue >= 0 && intValue <= 7) {
-                                setState(() {
-                                  _rules = _rules.copyWith(herWeeklyJunkMealLimit: intValue);
-                                });
-                                _saveChanges();
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRewardSystem() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(Icons.card_giftcard, color: Colors.orange, size: 24),
-            const SizedBox(width: 8),
-            const Text(
-              'Reward System',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const Spacer(),
-            Switch(
-              value: _rules.rewardSystemEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _rules = _rules.copyWith(rewardSystemEnabled: value);
-                });
-                _saveChanges();
-              },
-              activeColor: Colors.orange,
-            ),
-          ],
-        ),
-        if (_rules.rewardSystemEnabled) ...[
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.orange.withOpacity(0.3)),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Extra meals after junk-free week',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        ),
-                        controller: TextEditingController(text: _rules.junkFreeWeekReward.toString()),
-                        onChanged: (value) {
-                          final intValue = int.tryParse(value) ?? 1;
-                          if (intValue >= 0 && intValue <= 3) {
-                            setState(() {
-                              _rules = _rules.copyWith(junkFreeWeekReward: intValue);
-                            });
-                            _saveChanges();
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Reward expires (days)',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        ),
-                        controller: TextEditingController(text: _rules.rewardExpiryDays.toString()),
-                        onChanged: (value) {
-                          final intValue = int.tryParse(value) ?? 7;
-                          if (intValue >= 1 && intValue <= 14) {
-                            setState(() {
-                              _rules = _rules.copyWith(rewardExpiryDays: intValue);
-                            });
-                            _saveChanges();
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  '💡 If someone has a junk-free week, they get extra meals as a reward!',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ],
     );
   }
 

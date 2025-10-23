@@ -4,12 +4,18 @@ import 'dart:convert';
 import '../../data/models/food_entry.dart';
 import '../../data/models/weekly_summary.dart';
 import '../../data/models/fine_settings.dart';
+import '../../data/repositories/food_entries_repository.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/colors.dart';
+import '../../core/services/notification_service.dart';
 import 'accountability_controller.dart';
 import 'settings_controller.dart';
 
 class FoodTrackerController extends GetxController {
+  // Repository
+  final FoodEntriesRepository _repository = FoodEntriesRepository();
+  final NotificationService _notificationService = NotificationService();
+  
   // Observable lists
   final RxList<FoodEntry> _foodEntries = <FoodEntry>[].obs;
   final RxList<WeeklySummary> _weeklySummaries = <WeeklySummary>[].obs;
@@ -86,9 +92,32 @@ class FoodTrackerController extends GetxController {
     _loadData();
   }
   
-  // Load data from SharedPreferences
+  // Load data from Firebase
   Future<void> _loadData() async {
     _isLoading.value = true;
+    try {
+      // Listen to Firebase stream for real-time updates
+      _repository.getFoodEntries().listen((entries) {
+        _foodEntries.value = entries;
+        _generateWeeklySummaries();
+      });
+      
+      // Initial load
+      final entries = await _repository.getAllFoodEntriesOnce();
+      _foodEntries.value = entries;
+      _generateWeeklySummaries();
+      
+    } catch (e) {
+      print('Error loading data: $e');
+      // Fallback to SharedPreferences for migration
+      await _loadFromSharedPreferences();
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+  
+  // Fallback: Load data from SharedPreferences (for migration)
+  Future<void> _loadFromSharedPreferences() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       
@@ -116,18 +145,22 @@ class FoodTrackerController extends GetxController {
       }
       
     } catch (e) {
-      print('Error loading data: $e');
-    } finally {
-      _isLoading.value = false;
+      print('Error loading from SharedPreferences: $e');
     }
   }
   
-  // Save data to SharedPreferences
+  // Save data to Firebase
   Future<void> _saveData() async {
     try {
+      // Firebase automatically syncs, but we'll still save to SharedPreferences for backup
       final prefs = await SharedPreferences.getInstance();
       
-      // Save food entries
+      // Save food entries to Firebase (through repository)
+      for (final entry in _foodEntries) {
+        await _repository.addFoodEntry(entry);
+      }
+      
+      // Save to SharedPreferences as backup
       final entriesJson = json.encode(_foodEntries.map((e) => e.toJson()).toList());
       await prefs.setString(AppConstants.foodEntriesKey, entriesJson);
       
@@ -171,9 +204,18 @@ class FoodTrackerController extends GetxController {
       existingEntries: _foodEntries, // Pass existing entries to check weekly limits
     );
     
-    _foodEntries.add(entry);
-    _generateWeeklySummaries();
-    await _saveData();
+    // Add to Firebase
+    try {
+      await _repository.addFoodEntry(entry);
+      _foodEntries.add(entry);
+      _generateWeeklySummaries();
+    } catch (e) {
+      print('Error adding to Firebase: $e');
+      // Fallback to local storage
+      _foodEntries.add(entry);
+      _generateWeeklySummaries();
+      await _saveData();
+    }
     
     // Create accountability entries for this food entry
     try {
@@ -181,6 +223,27 @@ class FoodTrackerController extends GetxController {
       await accountabilityController.createAccountabilityEntriesFromFoodEntry(entry);
     } catch (e) {
       print('Accountability controller not found: $e');
+    }
+    
+    // Send notification to partner if junk food entry
+    if (entry.status == AppConstants.junkFine && entry.fine.totalExercises > 0) {
+      try {
+        // Determine who ate and what exercises are needed
+        String exerciseDetails = entry.fine.description;
+        String exerciseCount = entry.fine.totalExercises.toString();
+        
+        // Send notification
+        await _notificationService.notifyPartnerAboutJunkFood(
+          whoAte: whoAte,
+          foodName: foodName,
+          exerciseCount: exerciseCount,
+          exerciseDetails: exerciseDetails,
+        );
+        
+        print('✅ Notification sent to partner');
+      } catch (e) {
+        print('⚠️ Error sending notification: $e');
+      }
     }
     
     // Show success message
@@ -199,17 +262,33 @@ class FoodTrackerController extends GetxController {
   Future<void> updateFoodEntry(FoodEntry entry) async {
     final index = _foodEntries.indexWhere((e) => e.id == entry.id);
     if (index != -1) {
-      _foodEntries[index] = entry;
-      _generateWeeklySummaries();
-      await _saveData();
+      try {
+        await _repository.updateFoodEntry(entry);
+        _foodEntries[index] = entry;
+        _generateWeeklySummaries();
+      } catch (e) {
+        print('Error updating in Firebase: $e');
+        // Fallback to local storage
+        _foodEntries[index] = entry;
+        _generateWeeklySummaries();
+        await _saveData();
+      }
     }
   }
   
   // Delete food entry
   Future<void> deleteFoodEntry(String entryId) async {
-    _foodEntries.removeWhere((entry) => entry.id == entryId);
-    _generateWeeklySummaries();
-    await _saveData();
+    try {
+      await _repository.deleteFoodEntry(entryId);
+      _foodEntries.removeWhere((entry) => entry.id == entryId);
+      _generateWeeklySummaries();
+    } catch (e) {
+      print('Error deleting from Firebase: $e');
+      // Fallback to local storage
+      _foodEntries.removeWhere((entry) => entry.id == entryId);
+      _generateWeeklySummaries();
+      await _saveData();
+    }
     
     Get.snackbar(
       'Entry Deleted',
@@ -303,44 +382,6 @@ class FoodTrackerController extends GetxController {
     // This method is no longer needed as accountability entries are created directly
     // when food entries are added via createAccountabilityEntriesFromFoodEntry
     print('ℹ️ _syncWithAccountability called - this is now handled directly in addFoodEntry');
-  }
-  
-  // Check weekly limits for a person
-  Map<String, dynamic> checkWeeklyLimits(String whoAte, String foodType) {
-    final currentWeek = _getWeekNumber(DateTime.now());
-    final weekEntries = _foodEntries.where((entry) => 
-      entry.weekNumber == currentWeek && 
-      entry.whoAte == whoAte && 
-      entry.foodType == foodType
-    ).toList();
-    
-    final totalQuantity = weekEntries.fold(0.0, (sum, entry) => sum + entry.quantity);
-    
-    // Get settings for this food type
-    FineSettings? fineSettings;
-    try {
-      final settingsController = Get.find<SettingsController>();
-      fineSettings = settingsController.fineSettings
-          .where((setting) => setting.foodType == foodType)
-          .firstOrNull;
-    } catch (e) {
-      print('Settings controller not found: $e');
-    }
-    
-    int weeklyLimit = 1; // Default limit
-    if (fineSettings != null) {
-      weeklyLimit = whoAte == AppConstants.him 
-          ? fineSettings.distributionRules.himWeeklyJunkMealLimit
-          : fineSettings.distributionRules.herWeeklyJunkMealLimit;
-    }
-    
-    return {
-      'current': totalQuantity,
-      'limit': weeklyLimit,
-      'remaining': weeklyLimit - totalQuantity,
-      'exceeded': totalQuantity >= weeklyLimit,
-      'entries': weekEntries,
-    };
   }
   
   // Get weekly summary for a person

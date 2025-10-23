@@ -5,9 +5,13 @@ import '../../data/models/exercise.dart';
 import '../../data/models/fine_set.dart';
 import '../../data/models/fine_settings.dart';
 import '../../data/models/distribution_rules.dart';
+import '../../data/repositories/settings_repository.dart';
 import '../../core/constants/app_constants.dart';
 
 class SettingsController extends GetxController {
+  // Repository
+  final SettingsRepository _repository = SettingsRepository();
+  
   // Observable lists
   final RxList<Exercise> _exercises = <Exercise>[].obs;
   final RxList<FineSet> _fineSets = <FineSet>[].obs;
@@ -28,7 +32,73 @@ class SettingsController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeDefaultData();
-    loadSettings();
+    _loadData();
+  }
+  
+  // Load data from Firebase
+  Future<void> _loadData() async {
+    _isLoading.value = true;
+    try {
+      // Listen to Firebase stream for real-time updates
+      _repository.getSettings().listen((settings) {
+        if (settings.containsKey('exercises')) {
+          final exercisesList = settings['exercises'] as List;
+          _exercises.value = exercisesList
+              .map((e) => Exercise.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        
+        if (settings.containsKey('fineSets')) {
+          final fineSetsList = settings['fineSets'] as List;
+          _fineSets.value = fineSetsList
+              .map((fs) => FineSet.fromJson(fs as Map<String, dynamic>))
+              .toList();
+        }
+        
+        if (settings.containsKey('fineSettings')) {
+          final fineSettingsList = settings['fineSettings'] as List;
+          _fineSettings.value = fineSettingsList
+              .map((fs) => FineSettings.fromJson(fs as Map<String, dynamic>))
+              .toList();
+        }
+      });
+      
+      // Initial load
+      final settings = await _repository.getAllSettingsOnce();
+      if (settings.containsKey('exercises')) {
+        final exercisesList = settings['exercises'] as List;
+        _exercises.value = exercisesList
+            .map((e) => Exercise.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+      
+      if (settings.containsKey('fineSets')) {
+        final fineSetsList = settings['fineSets'] as List;
+        _fineSets.value = fineSetsList
+            .map((fs) => FineSet.fromJson(fs as Map<String, dynamic>))
+            .toList();
+      }
+      
+      if (settings.containsKey('fineSettings')) {
+        final fineSettingsList = settings['fineSettings'] as List;
+        _fineSettings.value = fineSettingsList
+            .map((fs) => FineSettings.fromJson(fs as Map<String, dynamic>))
+            .toList();
+      }
+      
+      // Initialize defaults if no data exists
+      if (_exercises.isEmpty || _fineSets.isEmpty || _fineSettings.isEmpty) {
+        _initializeDefaultData();
+        await saveSettings();
+      }
+      
+    } catch (e) {
+      print('Error loading settings from Firebase: $e');
+      // Fallback to SharedPreferences for migration
+      await loadSettings();
+    } finally {
+      _isLoading.value = false;
+    }
   }
 
   void _initializeDefaultData() {
@@ -45,6 +115,31 @@ class SettingsController extends GetxController {
     // Initialize default fine settings if none exist
     if (_fineSettings.isEmpty) {
       _fineSettings.addAll(_getDefaultFineSettings());
+    } else {
+      // Check if all food types have fine settings, add missing ones
+      final allFoodTypes = [
+        AppConstants.majorJunk,
+        AppConstants.coldDrink,
+        AppConstants.snacks,
+        AppConstants.desiOutside,
+        AppConstants.dessert,
+      ];
+      
+      // Ensure all fine sets exist first
+      final defaultFineSets = _getDefaultFineSets();
+      for (final fineSet in defaultFineSets) {
+        if (!_fineSets.any((fs) => fs.id == fineSet.id)) {
+          _fineSets.add(fineSet);
+        }
+      }
+      
+      // Ensure all fine settings exist
+      final defaultFineSettings = _getDefaultFineSettings();
+      for (final defaultSetting in defaultFineSettings) {
+        if (!_fineSettings.any((fs) => fs.foodType == defaultSetting.foodType)) {
+          _fineSettings.add(defaultSetting);
+        }
+      }
     }
   }
 
@@ -97,9 +192,11 @@ class SettingsController extends GetxController {
     final jumpingRope = _exercises.firstWhere((e) => e.id == 'jumping_rope');
     final squat = _exercises.firstWhere((e) => e.id == 'squat');
     final jumpingJack = _exercises.firstWhere((e) => e.id == 'jumping_jack');
+    final highKnee = _exercises.firstWhere((e) => e.id == 'high_knee');
     final pushup = _exercises.firstWhere((e) => e.id == 'pushup');
 
     return [
+      // Major Junk
       FineSet(
         id: 'major_junk_him',
         title: 'Major Junk Food Fine (Him)',
@@ -166,12 +263,192 @@ class SettingsController extends GetxController {
         createdAt: DateTime.now(),
         isDefault: true,
       ),
+      // Cold Drink
+      FineSet(
+        id: 'cold_drink_him',
+        title: 'Cold Drink Fine (Him)',
+        description: 'Fine for Him when drinking cold drinks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 40,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 40,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      FineSet(
+        id: 'cold_drink_her',
+        title: 'Cold Drink Fine (Her)',
+        description: 'Fine for Her when drinking cold drinks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 32,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 32,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      // Snacks
+      FineSet(
+        id: 'snacks_him',
+        title: 'Snacks Fine (Him)',
+        description: 'Fine for Him when eating snacks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 60,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 20,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      FineSet(
+        id: 'snacks_her',
+        title: 'Snacks Fine (Her)',
+        description: 'Fine for Her when eating snacks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 48,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 15,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      // Desi Outside
+      FineSet(
+        id: 'desi_outside_him',
+        title: 'Desi Outside Fine (Him)',
+        description: 'Fine for Him when eating desi outside food',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 100,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 40,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 30,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      FineSet(
+        id: 'desi_outside_her',
+        title: 'Desi Outside Fine (Her)',
+        description: 'Fine for Her when eating desi outside food',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 80,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 32,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 24,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      // Dessert
+      FineSet(
+        id: 'dessert_him',
+        title: 'Dessert Fine (Him)',
+        description: 'Fine for Him when eating dessert',
+        exercises: [
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 50,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      FineSet(
+        id: 'dessert_her',
+        title: 'Dessert Fine (Her)',
+        description: 'Fine for Her when eating dessert',
+        exercises: [
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 40,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
     ];
   }
 
   List<FineSettings> _getDefaultFineSettings() {
     final majorJunkHim = _fineSets.firstWhere((fs) => fs.id == 'major_junk_him');
     final majorJunkHer = _fineSets.firstWhere((fs) => fs.id == 'major_junk_her');
+    final coldDrinkHim = _fineSets.firstWhere((fs) => fs.id == 'cold_drink_him');
+    final coldDrinkHer = _fineSets.firstWhere((fs) => fs.id == 'cold_drink_her');
+    final snacksHim = _fineSets.firstWhere((fs) => fs.id == 'snacks_him');
+    final snacksHer = _fineSets.firstWhere((fs) => fs.id == 'snacks_her');
+    final desiOutsideHim = _fineSets.firstWhere((fs) => fs.id == 'desi_outside_him');
+    final desiOutsideHer = _fineSets.firstWhere((fs) => fs.id == 'desi_outside_her');
+    final dessertHim = _fineSets.firstWhere((fs) => fs.id == 'dessert_him');
+    final dessertHer = _fineSets.firstWhere((fs) => fs.id == 'dessert_her');
 
     return [
       FineSettings(
@@ -180,6 +457,46 @@ class SettingsController extends GetxController {
         foodTypeEmoji: AppConstants.foodTypeEmojis[AppConstants.majorJunk]!,
         himFineSet: majorJunkHim,
         herFineSet: majorJunkHer,
+        distributionRules: DistributionRules.defaultRules(),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      FineSettings(
+        id: 'cold_drink_settings',
+        foodType: AppConstants.coldDrink,
+        foodTypeEmoji: AppConstants.foodTypeEmojis[AppConstants.coldDrink]!,
+        himFineSet: coldDrinkHim,
+        herFineSet: coldDrinkHer,
+        distributionRules: DistributionRules.defaultRules(),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      FineSettings(
+        id: 'snacks_settings',
+        foodType: AppConstants.snacks,
+        foodTypeEmoji: AppConstants.foodTypeEmojis[AppConstants.snacks]!,
+        himFineSet: snacksHim,
+        herFineSet: snacksHer,
+        distributionRules: DistributionRules.defaultRules(),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      FineSettings(
+        id: 'desi_outside_settings',
+        foodType: AppConstants.desiOutside,
+        foodTypeEmoji: AppConstants.foodTypeEmojis[AppConstants.desiOutside]!,
+        himFineSet: desiOutsideHim,
+        herFineSet: desiOutsideHer,
+        distributionRules: DistributionRules.defaultRules(),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      FineSettings(
+        id: 'dessert_settings',
+        foodType: AppConstants.dessert,
+        foodTypeEmoji: AppConstants.foodTypeEmojis[AppConstants.dessert]!,
+        himFineSet: dessertHim,
+        herFineSet: dessertHer,
         distributionRules: DistributionRules.defaultRules(),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -266,6 +583,15 @@ class SettingsController extends GetxController {
   Future<void> saveSettings() async {
     try {
       _isLoading.value = true;
+      
+      // Save to Firebase
+      await _repository.saveAllSettings(
+        exercises: _exercises,
+        fineSets: _fineSets,
+        fineSettings: _fineSettings,
+      );
+      
+      // Backup to SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       
       // Save exercises
@@ -334,97 +660,4 @@ class SettingsController extends GetxController {
     await saveSettings();
   }
 
-  // Reward Meal Management
-  void addRewardMeal(String person) {
-    for (final fineSetting in _fineSettings) {
-      final currentRules = fineSetting.distributionRules;
-      final newRules = person == AppConstants.him
-          ? currentRules.copyWith(himCurrentRewardMeals: currentRules.himCurrentRewardMeals + 1)
-          : currentRules.copyWith(herCurrentRewardMeals: currentRules.herCurrentRewardMeals + 1);
-      
-      final updatedFineSetting = FineSettings(
-        id: fineSetting.id,
-        foodType: fineSetting.foodType,
-        foodTypeEmoji: fineSetting.foodTypeEmoji,
-        himFineSet: fineSetting.himFineSet,
-        herFineSet: fineSetting.herFineSet,
-        distributionRules: newRules,
-        createdAt: fineSetting.createdAt,
-        updatedAt: DateTime.now(),
-      );
-      
-      final index = _fineSettings.indexWhere((fs) => fs.id == fineSetting.id);
-      if (index != -1) {
-        _fineSettings[index] = updatedFineSetting;
-      }
-    }
-    saveSettings();
-  }
-
-  void removeRewardMeal(String person) {
-    for (final fineSetting in _fineSettings) {
-      final currentRules = fineSetting.distributionRules;
-      final currentRewardMeals = person == AppConstants.him 
-          ? currentRules.himCurrentRewardMeals 
-          : currentRules.herCurrentRewardMeals;
-      
-      if (currentRewardMeals > 0) {
-        final newRules = person == AppConstants.him
-            ? currentRules.copyWith(himCurrentRewardMeals: currentRewardMeals - 1)
-            : currentRules.copyWith(herCurrentRewardMeals: currentRewardMeals - 1);
-        
-        final updatedFineSetting = FineSettings(
-          id: fineSetting.id,
-          foodType: fineSetting.foodType,
-          foodTypeEmoji: fineSetting.foodTypeEmoji,
-          himFineSet: fineSetting.himFineSet,
-          herFineSet: fineSetting.herFineSet,
-          distributionRules: newRules,
-          createdAt: fineSetting.createdAt,
-          updatedAt: DateTime.now(),
-        );
-        
-        final index = _fineSettings.indexWhere((fs) => fs.id == fineSetting.id);
-        if (index != -1) {
-          _fineSettings[index] = updatedFineSetting;
-        }
-      }
-    }
-    saveSettings();
-  }
-
-  int getRewardMeals(String person) {
-    if (_fineSettings.isEmpty) return 0;
-    
-    final firstFineSetting = _fineSettings.first;
-    return person == AppConstants.him 
-        ? firstFineSetting.distributionRules.himCurrentRewardMeals
-        : firstFineSetting.distributionRules.herCurrentRewardMeals;
-  }
-
-  void setRewardMeals(String person, int count) {
-    for (final fineSetting in _fineSettings) {
-      final currentRules = fineSetting.distributionRules;
-      final newRules = person == AppConstants.him
-          ? currentRules.copyWith(himCurrentRewardMeals: count)
-          : currentRules.copyWith(herCurrentRewardMeals: count);
-      
-      final updatedFineSetting = FineSettings(
-        id: fineSetting.id,
-        foodType: fineSetting.foodType,
-        foodTypeEmoji: fineSetting.foodTypeEmoji,
-        himFineSet: fineSetting.himFineSet,
-        herFineSet: fineSetting.herFineSet,
-        distributionRules: newRules,
-        createdAt: fineSetting.createdAt,
-        updatedAt: DateTime.now(),
-      );
-      
-      final index = _fineSettings.indexWhere((fs) => fs.id == fineSetting.id);
-      if (index != -1) {
-        _fineSettings[index] = updatedFineSetting;
-      }
-    }
-    saveSettings();
-  }
 }

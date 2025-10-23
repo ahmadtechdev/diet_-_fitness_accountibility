@@ -4,11 +4,15 @@ import 'dart:convert';
 import '../../data/models/accountability_entry.dart';
 import '../../data/models/food_entry.dart';
 import '../../data/models/fine_settings.dart';
+import '../../data/repositories/accountability_repository.dart';
 import '../../core/constants/app_constants.dart';
 import 'food_tracker_controller.dart';
 import 'settings_controller.dart';
 
 class AccountabilityController extends GetxController {
+  // Repository
+  final AccountabilityRepository _repository = AccountabilityRepository();
+  
   // Observable lists
   final RxList<AccountabilityEntry> _accountabilityEntries = <AccountabilityEntry>[].obs;
   final RxList<AccountabilityEntry> _pendingEntries = <AccountabilityEntry>[].obs;
@@ -88,7 +92,31 @@ class AccountabilityController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadAccountabilityEntries();
+    _loadData();
+  }
+  
+  // Load data from Firebase
+  Future<void> _loadData() async {
+    _isLoading.value = true;
+    try {
+      // Listen to Firebase stream for real-time updates
+      _repository.getAccountabilityEntries().listen((entries) {
+        _accountabilityEntries.value = entries;
+        _updateFilteredLists();
+      });
+      
+      // Initial load
+      final entries = await _repository.getAllAccountabilityEntriesOnce();
+      _accountabilityEntries.value = entries;
+      _updateFilteredLists();
+      
+    } catch (e) {
+      print('Error loading accountability data: $e');
+      // Fallback to SharedPreferences for migration
+      await loadAccountabilityEntries();
+    } finally {
+      _isLoading.value = false;
+    }
   }
 
   // Create accountability entries from food entry using new fine system
@@ -158,9 +186,15 @@ class AccountabilityController extends GetxController {
     }
   }
 
-  // Save accountability entries to storage
+  // Save accountability entries to Firebase and backup to SharedPreferences
   Future<void> _saveAccountabilityEntries() async {
     try {
+      // Save all entries to Firebase
+      for (final entry in _accountabilityEntries) {
+        await _repository.addAccountabilityEntry(entry);
+      }
+      
+      // Backup to SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final entriesJson = _accountabilityEntries
           .map((entry) => jsonEncode(entry.toJson()))
@@ -202,21 +236,37 @@ class AccountabilityController extends GetxController {
   Future<void> markAsCompleted(String entryId, String completedBy) async {
     final index = _accountabilityEntries.indexWhere((entry) => entry.id == entryId);
     if (index != -1) {
-      _accountabilityEntries[index] = _accountabilityEntries[index].markAsCompleted(completedBy);
+      final updatedEntry = _accountabilityEntries[index].markAsCompleted(completedBy);
+      _accountabilityEntries[index] = updatedEntry;
+      
+      try {
+        await _repository.updateAccountabilityEntry(updatedEntry);
+      } catch (e) {
+        print('Error updating in Firebase: $e');
+      }
+      
       await _saveAccountabilityEntries();
       _updateFilteredLists();
     }
   }
-
+  
   // Mark an entry as pending (undo completion)
   Future<void> markAsPending(String entryId) async {
     final index = _accountabilityEntries.indexWhere((entry) => entry.id == entryId);
     if (index != -1) {
-      _accountabilityEntries[index] = _accountabilityEntries[index].copyWith(
+      final updatedEntry = _accountabilityEntries[index].copyWith(
         isCompleted: false,
         completedAt: null,
         completedBy: '',
       );
+      _accountabilityEntries[index] = updatedEntry;
+      
+      try {
+        await _repository.updateAccountabilityEntry(updatedEntry);
+      } catch (e) {
+        print('Error updating in Firebase: $e');
+      }
+      
       await _saveAccountabilityEntries();
       _updateFilteredLists();
     }

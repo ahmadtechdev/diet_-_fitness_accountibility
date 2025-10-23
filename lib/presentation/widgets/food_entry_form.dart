@@ -465,36 +465,45 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
       existingEntries: existingEntries,
     );
 
+    final himFine = distributedFines['him']!;
+    final herFine = distributedFines['her']!;
+
     if (_selectedWhoAte == AppConstants.both) {
       // Show fines for both Him and Her
       return Column(
         children: [
-          _buildDistributedFinePreview(distributedFines['him']!, 'Him', fineSettings.himFineSet),
+          _buildDistributedFinePreview(himFine, 'Him', fineSettings.himFineSet),
           const SizedBox(height: 12),
-          _buildDistributedFinePreview(distributedFines['her']!, 'Her', fineSettings.herFineSet),
+          _buildDistributedFinePreview(herFine, 'Her', fineSettings.herFineSet),
         ],
       );
     } else {
-      // Show fine for selected person and partner distribution if applicable
-      final personFine = _selectedWhoAte == AppConstants.him 
-          ? distributedFines['him']! 
-          : distributedFines['her']!;
-      final partnerFine = _selectedWhoAte == AppConstants.him 
-          ? distributedFines['her']! 
-          : distributedFines['him']!;
+      // Show fine for selected person and partner distribution
+      final personFine = _selectedWhoAte == AppConstants.him ? himFine : herFine;
+      final partnerFine = _selectedWhoAte == AppConstants.him ? herFine : himFine;
+      final personDisplayName = _selectedWhoAte == AppConstants.him ? 'Him' : 'Her';
+      final partnerDisplayName = _selectedWhoAte == AppConstants.him ? 'Her' : 'Him';
+      
+      // Always show both fines for junk food (unless both are 0)
+      if (personFine.totalExercises == 0 && partnerFine.totalExercises == 0) {
+        return _buildDistributedFinePreview(personFine, personDisplayName, 
+          _selectedWhoAte == AppConstants.him ? fineSettings.himFineSet : fineSettings.herFineSet);
+      }
       
       return Column(
         children: [
-          _buildDistributedFinePreview(
-            personFine, 
-            _selectedWhoAte, 
-            _selectedWhoAte == AppConstants.him ? fineSettings.himFineSet : fineSettings.herFineSet
-          ),
+          if (personFine.totalExercises > 0) ...[
+            _buildDistributedFinePreview(
+              personFine, 
+              personDisplayName, 
+              _selectedWhoAte == AppConstants.him ? fineSettings.himFineSet : fineSettings.herFineSet
+            ),
+          ],
           if (partnerFine.totalExercises > 0) ...[
-            const SizedBox(height: 12),
+            if (personFine.totalExercises > 0) const SizedBox(height: 12),
             _buildDistributedFinePreview(
               partnerFine, 
-              _selectedWhoAte == AppConstants.him ? 'Her' : 'Him', 
+              partnerDisplayName, 
               _selectedWhoAte == AppConstants.him ? fineSettings.herFineSet : fineSettings.himFineSet,
               isPartnerDistribution: true,
             ),

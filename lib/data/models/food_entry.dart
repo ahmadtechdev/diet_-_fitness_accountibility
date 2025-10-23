@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/utils/firestore_helpers.dart';
 import 'fine_set.dart';
 import 'fine_settings.dart';
 
@@ -117,9 +119,20 @@ class FoodEntry extends Equatable {
   }
 
   factory FoodEntry.fromJson(Map<String, dynamic> json) {
+    // Handle both Timestamp (from Firestore) and String (from SharedPreferences)
+    final dateValue = json['date'];
+    DateTime entryDate;
+    if (dateValue is Timestamp) {
+      entryDate = dateValue.toDate();
+    } else if (dateValue is String) {
+      entryDate = DateTime.parse(dateValue);
+    } else {
+      entryDate = dateValue as DateTime;
+    }
+    
     return FoodEntry(
       id: json['id'] as String,
-      date: DateTime.parse(json['date'] as String),
+      date: entryDate,
       whoAte: json['whoAte'] as String,
       foodType: json['foodType'] as String,
       foodName: json['foodName'] as String,
