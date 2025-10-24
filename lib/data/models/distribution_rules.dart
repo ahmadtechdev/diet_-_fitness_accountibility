@@ -17,10 +17,10 @@ class DistributionRules extends Equatable {
 
   factory DistributionRules.defaultRules() {
     return const DistributionRules(
-      himEatsMoreThanOnceHimPercentage: 70,
-      himEatsMoreThanOnceHerPercentage: 30,
-      herEatsHimPercentage: 40,
-      herEatsHerPercentage: 60,
+      himEatsMoreThanOnceHimPercentage: 20,
+      himEatsMoreThanOnceHerPercentage: 80,
+      herEatsHimPercentage: 30,
+      herEatsHerPercentage: 70,
       bothEatPercentage: 50,
     );
   }

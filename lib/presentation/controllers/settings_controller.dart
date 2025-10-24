@@ -196,7 +196,7 @@ class SettingsController extends GetxController {
     final pushup = _exercises.firstWhere((e) => e.id == 'pushup');
 
     return [
-      // Major Junk
+      // Major Junk - Based on image: 80 Jump Ropes + 40 Squats + 40 Jumping Jacks + 40 High Knees + 10 Pushups
       FineSet(
         id: 'major_junk_him',
         title: 'Major Junk Food Fine (Him)',
@@ -206,25 +206,31 @@ class SettingsController extends GetxController {
             exerciseId: jumpingRope.id,
             exerciseName: jumpingRope.name,
             exerciseEmoji: jumpingRope.emoji,
-            quantity: 100,
+            quantity: 80,
           ),
           FineSetExercise(
             exerciseId: squat.id,
             exerciseName: squat.name,
             exerciseEmoji: squat.emoji,
-            quantity: 50,
+            quantity: 40,
           ),
           FineSetExercise(
             exerciseId: jumpingJack.id,
             exerciseName: jumpingJack.name,
             exerciseEmoji: jumpingJack.emoji,
-            quantity: 50,
+            quantity: 40,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 40,
           ),
           FineSetExercise(
             exerciseId: pushup.id,
             exerciseName: pushup.name,
             exerciseEmoji: pushup.emoji,
-            quantity: 20,
+            quantity: 10,
           ),
         ],
         createdAt: DateTime.now(),
@@ -254,102 +260,22 @@ class SettingsController extends GetxController {
             quantity: 40,
           ),
           FineSetExercise(
-            exerciseId: pushup.id,
-            exerciseName: pushup.name,
-            exerciseEmoji: pushup.emoji,
-            quantity: 15,
-          ),
-        ],
-        createdAt: DateTime.now(),
-        isDefault: true,
-      ),
-      // Cold Drink
-      FineSet(
-        id: 'cold_drink_him',
-        title: 'Cold Drink Fine (Him)',
-        description: 'Fine for Him when drinking cold drinks',
-        exercises: [
-          FineSetExercise(
-            exerciseId: jumpingJack.id,
-            exerciseName: jumpingJack.name,
-            exerciseEmoji: jumpingJack.emoji,
-            quantity: 40,
-          ),
-          FineSetExercise(
             exerciseId: highKnee.id,
             exerciseName: highKnee.name,
             exerciseEmoji: highKnee.emoji,
             quantity: 40,
           ),
-        ],
-        createdAt: DateTime.now(),
-        isDefault: true,
-      ),
-      FineSet(
-        id: 'cold_drink_her',
-        title: 'Cold Drink Fine (Her)',
-        description: 'Fine for Her when drinking cold drinks',
-        exercises: [
-          FineSetExercise(
-            exerciseId: jumpingJack.id,
-            exerciseName: jumpingJack.name,
-            exerciseEmoji: jumpingJack.emoji,
-            quantity: 32,
-          ),
-          FineSetExercise(
-            exerciseId: highKnee.id,
-            exerciseName: highKnee.name,
-            exerciseEmoji: highKnee.emoji,
-            quantity: 32,
-          ),
-        ],
-        createdAt: DateTime.now(),
-        isDefault: true,
-      ),
-      // Snacks
-      FineSet(
-        id: 'snacks_him',
-        title: 'Snacks Fine (Him)',
-        description: 'Fine for Him when eating snacks',
-        exercises: [
-          FineSetExercise(
-            exerciseId: jumpingRope.id,
-            exerciseName: jumpingRope.name,
-            exerciseEmoji: jumpingRope.emoji,
-            quantity: 60,
-          ),
           FineSetExercise(
             exerciseId: pushup.id,
             exerciseName: pushup.name,
             exerciseEmoji: pushup.emoji,
-            quantity: 20,
+            quantity: 10,
           ),
         ],
         createdAt: DateTime.now(),
         isDefault: true,
       ),
-      FineSet(
-        id: 'snacks_her',
-        title: 'Snacks Fine (Her)',
-        description: 'Fine for Her when eating snacks',
-        exercises: [
-          FineSetExercise(
-            exerciseId: jumpingRope.id,
-            exerciseName: jumpingRope.name,
-            exerciseEmoji: jumpingRope.emoji,
-            quantity: 48,
-          ),
-          FineSetExercise(
-            exerciseId: pushup.id,
-            exerciseName: pushup.name,
-            exerciseEmoji: pushup.emoji,
-            quantity: 15,
-          ),
-        ],
-        createdAt: DateTime.now(),
-        isDefault: true,
-      ),
-      // Desi Outside
+      // Desi Outside - Based on image: 60 Jump Ropes + 30 Squats + 30 Jumping Jacks + 30 High Knees + 10 Pushups
       FineSet(
         id: 'desi_outside_him',
         title: 'Desi Outside Fine (Him)',
@@ -359,19 +285,31 @@ class SettingsController extends GetxController {
             exerciseId: jumpingRope.id,
             exerciseName: jumpingRope.name,
             exerciseEmoji: jumpingRope.emoji,
-            quantity: 100,
+            quantity: 60,
           ),
           FineSetExercise(
             exerciseId: squat.id,
             exerciseName: squat.name,
             exerciseEmoji: squat.emoji,
-            quantity: 40,
+            quantity: 30,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 30,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 30,
           ),
           FineSetExercise(
             exerciseId: pushup.id,
             exerciseName: pushup.name,
             exerciseEmoji: pushup.emoji,
-            quantity: 30,
+            quantity: 10,
           ),
         ],
         createdAt: DateTime.now(),
@@ -386,35 +324,71 @@ class SettingsController extends GetxController {
             exerciseId: jumpingRope.id,
             exerciseName: jumpingRope.name,
             exerciseEmoji: jumpingRope.emoji,
-            quantity: 80,
+            quantity: 60,
           ),
           FineSetExercise(
             exerciseId: squat.id,
             exerciseName: squat.name,
             exerciseEmoji: squat.emoji,
-            quantity: 32,
+            quantity: 30,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 30,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 30,
           ),
           FineSetExercise(
             exerciseId: pushup.id,
             exerciseName: pushup.name,
             exerciseEmoji: pushup.emoji,
-            quantity: 24,
+            quantity: 10,
           ),
         ],
         createdAt: DateTime.now(),
         isDefault: true,
       ),
-      // Dessert
+      // Dessert - Based on image: 70 Jump Ropes + 30 Squats + 40 Jumping Jacks + 40 High Knees + 10 Pushups
       FineSet(
         id: 'dessert_him',
         title: 'Dessert Fine (Him)',
         description: 'Fine for Him when eating dessert',
         exercises: [
           FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 70,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 30,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 40,
+          ),
+          FineSetExercise(
             exerciseId: highKnee.id,
             exerciseName: highKnee.name,
             exerciseEmoji: highKnee.emoji,
-            quantity: 50,
+            quantity: 40,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 10,
           ),
         ],
         createdAt: DateTime.now(),
@@ -426,10 +400,192 @@ class SettingsController extends GetxController {
         description: 'Fine for Her when eating dessert',
         exercises: [
           FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 70,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 30,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 40,
+          ),
+          FineSetExercise(
             exerciseId: highKnee.id,
             exerciseName: highKnee.name,
             exerciseEmoji: highKnee.emoji,
             quantity: 40,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 10,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      // Cold Drink - Based on image: 20 Jump Ropes + 15 Squats + 15 Jumping Jacks + 15 High Knees + 5 Pushups
+      FineSet(
+        id: 'cold_drink_him',
+        title: 'Cold Drink Fine (Him)',
+        description: 'Fine for Him when drinking cold drinks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 20,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 15,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 15,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 15,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 5,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      FineSet(
+        id: 'cold_drink_her',
+        title: 'Cold Drink Fine (Her)',
+        description: 'Fine for Her when drinking cold drinks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 20,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 15,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 15,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 15,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 5,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      // Snacks - Based on image: 10 Jump Ropes + 10 Squats + 10 Jumping Jacks + 10 High Knees + 2 Pushups
+      FineSet(
+        id: 'snacks_him',
+        title: 'Snacks Fine (Him)',
+        description: 'Fine for Him when eating snacks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 2,
+          ),
+        ],
+        createdAt: DateTime.now(),
+        isDefault: true,
+      ),
+      FineSet(
+        id: 'snacks_her',
+        title: 'Snacks Fine (Her)',
+        description: 'Fine for Her when eating snacks',
+        exercises: [
+          FineSetExercise(
+            exerciseId: jumpingRope.id,
+            exerciseName: jumpingRope.name,
+            exerciseEmoji: jumpingRope.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: squat.id,
+            exerciseName: squat.name,
+            exerciseEmoji: squat.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: jumpingJack.id,
+            exerciseName: jumpingJack.name,
+            exerciseEmoji: jumpingJack.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: highKnee.id,
+            exerciseName: highKnee.name,
+            exerciseEmoji: highKnee.emoji,
+            quantity: 10,
+          ),
+          FineSetExercise(
+            exerciseId: pushup.id,
+            exerciseName: pushup.name,
+            exerciseEmoji: pushup.emoji,
+            quantity: 2,
           ),
         ],
         createdAt: DateTime.now(),
