@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "1046596716413",
-    "project_id": "coupledietfitness",
-    "storage_bucket": "coupledietfitness.firebasestorage.app"
+    "project_number": "63674565821",
+    "firebase_url": "https://energicview-default-rtdb.firebaseio.com",
+    "project_id": "energicview",
+    "storage_bucket": "energicview.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1046596716413:android:4cc467805f7f3cfaa22e14",
+        "mobilesdk_app_id": "1:63674565821:android:5c515f5f3464b813ff63d4",
         "android_client_info": {
           "package_name": "com.example.couple_diet_fitness"
         }
@@ -15,7 +16,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD3K0JBa9WvxQgdCGDAz65CKhnKK4SiOlY"
+          "current_key": "AIzaSyCnOqHVsTPE1usH_ZwuaJEZqJ281I8mc8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63674565821:android:3a2b3c0a71594bd8ff63d4",
+        "android_client_info": {
+          "package_name": "com.example.energicview"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnOqHVsTPE1usH_ZwuaJEZqJ281I8mc8Y"
         }
       ],
       "services": {

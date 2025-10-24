@@ -39,6 +39,8 @@ This will open browser for authentication.
 cd functions
 ```
 
+**Note:** The `functions` directory has been created with all necessary files.
+
 ### Step 4: Install Dependencies
 
 ```bash

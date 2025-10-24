@@ -50,19 +50,22 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD3K0JBa9WvxQgdCGDAz65CKhnKK4SiOlY',
-    appId: '1:1046596716413:android:4cc467805f7f3cfaa22e14',
-    messagingSenderId: '1046596716413',
-    projectId: 'coupledietfitness',
-    storageBucket: 'coupledietfitness.firebasestorage.app',
+    apiKey: 'AIzaSyCnOqHVsTPE1usH_ZwuaJEZqJ281I8mc8Y',
+    appId: '1:63674565821:android:5c515f5f3464b813ff63d4',
+    messagingSenderId: '63674565821',
+    projectId: 'energicview',
+    databaseURL: 'https://energicview-default-rtdb.firebaseio.com',
+    storageBucket: 'energicview.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDGvISHCstPWgrw99q6f9K7OqfewNdYFyE',
-    appId: '1:1046596716413:ios:525a80ad489ac2bda22e14',
-    messagingSenderId: '1046596716413',
-    projectId: 'coupledietfitness',
-    storageBucket: 'coupledietfitness.firebasestorage.app',
+    apiKey: 'AIzaSyClqMHf01x6AEcimcS1ruyIZoEZF7n0x4E',
+    appId: '1:63674565821:ios:0365fd02b5f663dcff63d4',
+    messagingSenderId: '63674565821',
+    projectId: 'energicview',
+    databaseURL: 'https://energicview-default-rtdb.firebaseio.com',
+    storageBucket: 'energicview.firebasestorage.app',
     iosBundleId: 'com.example.coupleDietFitness',
   );
+
 }
