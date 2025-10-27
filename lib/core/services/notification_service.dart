@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 
 /// Step 1: Understanding Firebase Cloud Messaging (FCM)
@@ -27,6 +29,23 @@ class NotificationService {
   String? _currentUserId;
   String? _partnerToken;
 
+  /// Helper method to show debug messages in SnackBar
+  void _showDebugMessage(String message, {bool isError = false}) {
+    print(message);
+    try {
+      Get.snackbar(
+        isError ? '❌ Error' : '🔍 Debug',
+        message,
+        backgroundColor: isError ? Colors.red : Colors.blue,
+        colorText: Colors.white,
+        duration: Duration(seconds: 3),
+        snackPosition: SnackPosition.TOP,
+      );
+    } catch (e) {
+      print('Failed to show snackbar: $e');
+    }
+  }
+
   /// Step 2: Initialize FCM and Local Notifications
   /// 
   /// This method:
@@ -40,9 +59,11 @@ class NotificationService {
     if (_isInitialized) return;
     
     _currentUserId = userId;
+    _showDebugMessage('Starting notification setup for user: $userId');
     
     try {
       // Request permission to send notifications
+      _showDebugMessage('Requesting notification permissions...');
       NotificationSettings settings = await _fcm.requestPermission(
         alert: true,
         badge: true,
@@ -51,25 +72,31 @@ class NotificationService {
       );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print('✅ User granted notification permission');
+        _showDebugMessage('✅ Notification permission granted!');
       } else {
-        print('❌ User declined notification permission');
+        _showDebugMessage('❌ Notification permission denied: ${settings.authorizationStatus}', isError: true);
         return;
       }
 
       // Initialize local notifications for foreground display
+      _showDebugMessage('Setting up local notifications...');
       await _initializeLocalNotifications();
 
       // Get FCM token (this identifies your device)
+      _showDebugMessage('Getting device token...');
       String? token = await _fcm.getToken();
       if (token != null) {
-        print('📱 FCM Token: $token');
+        _showDebugMessage('📱 Token received: ${token.substring(0, 20)}...');
+        _showDebugMessage('Saving token to Firebase...');
         await _saveTokenToFirestore(token);
+      } else {
+        _showDebugMessage('❌ Failed to get device token', isError: true);
+        return;
       }
 
       // Listen for token refresh (token can change)
       _fcm.onTokenRefresh.listen((newToken) {
-        print('🔄 Token refreshed: $newToken');
+        _showDebugMessage('🔄 Token refreshed: ${newToken.substring(0, 20)}...');
         _saveTokenToFirestore(newToken);
       });
 
@@ -77,12 +104,15 @@ class NotificationService {
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
       // Load partner's token
+      _showDebugMessage('Looking for partner token...');
       await _loadPartnerToken();
 
       _isInitialized = true;
-      print('✅ Notification service initialized');
+      _showDebugMessage('✅ Notification setup complete for $userId!');
     } catch (e) {
-      print('❌ Error initializing notifications: $e');
+      _showDebugMessage('❌ Setup failed: $e', isError: true);
+      print('❌ Error initializing notifications for user $userId: $e');
+      print('❌ Stack trace: ${StackTrace.current}');
     }
   }
 
@@ -161,6 +191,14 @@ class NotificationService {
   
   Future<void> _saveTokenToFirestore(String token) async {
     try {
+      _showDebugMessage('Testing Firebase connection...');
+      
+      // Test Firestore connection first
+      await _firestore.collection('test').doc('connection').set({'test': true});
+      _showDebugMessage('✅ Firebase connected successfully!');
+      
+      // Now save the actual token
+      _showDebugMessage('Saving token for user: ${_currentUserId}...');
       await _firestore
           .collection('couples')
           .doc('default_couple')
@@ -169,11 +207,33 @@ class NotificationService {
           .set({
         'token': token,
         'updatedAt': FieldValue.serverTimestamp(),
+        'userId': _currentUserId,
+        'deviceInfo': 'Android',
       });
       
-      print('✅ Token saved to Firestore');
+      _showDebugMessage('✅ Token saved successfully!');
+      
+      // Verify the token was saved
+      final savedDoc = await _firestore
+          .collection('couples')
+          .doc('default_couple')
+          .collection('tokens')
+          .doc(_currentUserId ?? 'user1')
+          .get();
+          
+      if (savedDoc.exists) {
+        _showDebugMessage('✅ Token verified in database!');
+      } else {
+        _showDebugMessage('❌ Token verification failed', isError: true);
+      }
+      
     } catch (e) {
+      _showDebugMessage('❌ Firebase error: $e', isError: true);
       print('❌ Error saving token: $e');
+      print('❌ Error type: ${e.runtimeType}');
+      if (e.toString().contains('firestore.googleapis.com')) {
+        _showDebugMessage('❌ Network connectivity issue', isError: true);
+      }
     }
   }
 
@@ -186,6 +246,8 @@ class NotificationService {
       // Determine partner ID (if current user is 'him', partner is 'her' and vice versa)
       String partnerId = _currentUserId == 'him' ? 'her' : 'him';
       
+      _showDebugMessage('Looking for partner: $partnerId');
+      
       final doc = await _firestore
           .collection('couples')
           .doc('default_couple')
@@ -195,11 +257,28 @@ class NotificationService {
 
       if (doc.exists) {
         _partnerToken = doc.data()?['token'] as String?;
-        print('✅ Partner token loaded: ${_partnerToken?.substring(0, 20)}...');
+        _showDebugMessage('✅ Partner token found!');
       } else {
-        print('⚠️ Partner token not found');
+        _showDebugMessage('⚠️ Partner token not found yet');
+        
+        // List all available tokens
+        final allTokens = await _firestore
+            .collection('couples')
+            .doc('default_couple')
+            .collection('tokens')
+            .get();
+            
+        if (allTokens.docs.isEmpty) {
+          _showDebugMessage('No tokens found in database');
+        } else {
+          _showDebugMessage('Found ${allTokens.docs.length} token(s) in database');
+          for (var tokenDoc in allTokens.docs) {
+            _showDebugMessage('User: ${tokenDoc.id}');
+          }
+        }
       }
     } catch (e) {
+      _showDebugMessage('❌ Error loading partner token: $e', isError: true);
       print('❌ Error loading partner token: $e');
     }
   }

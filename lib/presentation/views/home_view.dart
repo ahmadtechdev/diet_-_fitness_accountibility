@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/utils/colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/services/notification_service.dart';
 import '../../app/routes/app_routes.dart';
 import '../controllers/food_tracker_controller.dart';
 import '../widgets/romantic_card.dart';
@@ -106,6 +107,15 @@ class HomeView extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          // Debug button for notification testing
+          IconButton(
+            onPressed: () => _testNotificationSetup(context),
+            icon: const Icon(
+              Icons.bug_report,
+              color: AppColors.textOnPrimary,
+            ),
+            tooltip: 'Test Notifications',
           ),
         ],
       ),
@@ -502,5 +512,49 @@ class HomeView extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
     );
+  }
+
+  void _testNotificationSetup(BuildContext context) {
+    Get.snackbar(
+      '🔍 Debug Test',
+      'Testing notification setup...',
+      backgroundColor: Colors.blue,
+      colorText: Colors.white,
+      duration: Duration(seconds: 2),
+    );
+    
+    // Test notification service
+    final notificationService = NotificationService();
+    
+    // Get current user ID from environment
+    const String? userIdFromDefine = String.fromEnvironment('USER_ID');
+    String userId = userIdFromDefine ?? 'him';
+    
+    Get.snackbar(
+      '🔍 Debug Info',
+      'Current user: $userId',
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+      duration: Duration(seconds: 3),
+    );
+    
+    // Re-initialize notification service
+    notificationService.initialize(userId).then((_) {
+      Get.snackbar(
+        '✅ Debug Complete',
+        'Notification setup test completed!',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
+    }).catchError((error) {
+      Get.snackbar(
+        '❌ Debug Error',
+        'Error: $error',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 3),
+      );
+    });
   }
 }

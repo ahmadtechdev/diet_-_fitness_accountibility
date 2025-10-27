@@ -141,7 +141,7 @@ class FineDistributionSection extends StatelessWidget {
           }),
         ),
       ],
-    );
+    ));
   }
 }
 
@@ -379,11 +379,12 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
+                child:                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                   ),
                 ),
               ),
@@ -392,7 +393,12 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
           const SizedBox(height: 12),
           Row(
             children: [
-              Text('$label: '),
+              Text(
+                '$label: ',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
+                ),
+              ),
               Text(
                 '${value.round()}%',
                 style: TextStyle(
@@ -406,7 +412,7 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
                 '${(100 - value).round()}%',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.6) ?? Colors.grey[600],
                   fontSize: 16,
                 ),
               ),
@@ -442,7 +448,7 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
                 width: 70,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: color.withOpacity(0.5)),
                 ),

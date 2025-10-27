@@ -448,14 +448,28 @@ class DailyLogView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Today\'s Entries',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Today\'s Entries',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        DateFormat('EEEE, MMMM d, y').format(controller.selectedDate),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
@@ -733,6 +747,23 @@ class DailyLogView extends StatelessWidget {
             notes: entry.notes,
           );
           Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Entry "${entry.foodName}" added successfully! 💕',
+                style: const TextStyle(
+                  color: AppColors.textOnPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              backgroundColor: AppColors.cleanDayGreen,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
         },
       ),
     );
@@ -755,6 +786,23 @@ class DailyLogView extends StatelessWidget {
         onSave: (updatedEntry) {
           controller.updateFoodEntry(updatedEntry);
           Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Entry "${updatedEntry.foodName}" updated successfully! ✨',
+                style: const TextStyle(
+                  color: AppColors.textOnPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              backgroundColor: AppColors.primaryPink,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
         },
       ),
     );
@@ -798,6 +846,23 @@ class DailyLogView extends StatelessWidget {
             onPressed: () {
               controller.deleteFoodEntry(entry.id);
               Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Entry "${entry.foodName}" deleted successfully! 🗑️',
+                    style: const TextStyle(
+                      color: AppColors.textOnPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  backgroundColor: AppColors.junkFoodRed,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.errorRed,

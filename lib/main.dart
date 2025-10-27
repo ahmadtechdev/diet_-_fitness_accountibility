@@ -15,7 +15,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('📨 Background message received: ${message.notification?.title}');
 }
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize Firebase
@@ -30,7 +30,22 @@ void main() async {
   // Note: In a real app, you'd determine userId from authentication
   // For now, using 'him' as default (you'll update this when users login)
   final notificationService = NotificationService();
-  await notificationService.initialize('him'); // Change to 'her' for the other partner
+  
+  // Check command line arguments or environment for user ID
+  String userId = 'him'; // Default
+  
+  // Check for dart-define first
+  const String? userIdFromDefine = String.fromEnvironment('USER_ID');
+  if (userIdFromDefine != null && userIdFromDefine.isNotEmpty) {
+    userId = userIdFromDefine;
+  }
+  // Then check command line arguments
+  else if (args.isNotEmpty && args[0] == 'her') {
+    userId = 'her';
+  }
+  
+  print('🔍 Initializing notification service for user: $userId');
+  await notificationService.initialize(userId);
   
   // Run data migration if needed
   try {

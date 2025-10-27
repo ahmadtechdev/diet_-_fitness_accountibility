@@ -50,22 +50,23 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCnOqHVsTPE1usH_ZwuaJEZqJ281I8mc8Y',
-    appId: '1:63674565821:android:5c515f5f3464b813ff63d4',
-    messagingSenderId: '63674565821',
-    projectId: 'energicview',
-    databaseURL: 'https://energicview-default-rtdb.firebaseio.com',
-    storageBucket: 'energicview.firebasestorage.app',
+    apiKey: 'AIzaSyC4NSo3kHRDXR96FsGC8h98XtcZ76uWjqo',
+    appId: '1:199281240510:android:5860bb9b7d021e6d4371ef',
+    messagingSenderId: '199281240510',
+    projectId: 'ridelo25',
+    databaseURL: 'https://ridelo25-default-rtdb.firebaseio.com',
+    storageBucket: 'ridelo25.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyClqMHf01x6AEcimcS1ruyIZoEZF7n0x4E',
-    appId: '1:63674565821:ios:0365fd02b5f663dcff63d4',
-    messagingSenderId: '63674565821',
-    projectId: 'energicview',
-    databaseURL: 'https://energicview-default-rtdb.firebaseio.com',
-    storageBucket: 'energicview.firebasestorage.app',
+    apiKey: 'AIzaSyAAUYTG3n2_R5s9gB33lrti-5Zk8KSGxWg',
+    appId: '1:199281240510:ios:abcdd84ef452bed84371ef',
+    messagingSenderId: '199281240510',
+    projectId: 'ridelo25',
+    databaseURL: 'https://ridelo25-default-rtdb.firebaseio.com',
+    storageBucket: 'ridelo25.firebasestorage.app',
+    androidClientId: '199281240510-5l2s76oo50mg7jbse24fc7eep9d2u25r.apps.googleusercontent.com',
+    iosClientId: '199281240510-77shmkir82djphurjslh6n471bun5l13.apps.googleusercontent.com',
     iosBundleId: 'com.example.coupleDietFitness',
   );
-
 }
