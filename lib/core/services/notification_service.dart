@@ -257,7 +257,11 @@ class NotificationService {
 
       if (doc.exists) {
         _partnerToken = doc.data()?['token'] as String?;
-        _showDebugMessage('✅ Partner token found!');
+        if (_partnerToken != null) {
+          _showDebugMessage('✅ Partner token found!');
+        } else {
+          _showDebugMessage('❌ Partner token document exists but token is null', isError: true);
+        }
       } else {
         _showDebugMessage('⚠️ Partner token not found yet');
         
@@ -274,6 +278,12 @@ class NotificationService {
           _showDebugMessage('Found ${allTokens.docs.length} token(s) in database');
           for (var tokenDoc in allTokens.docs) {
             _showDebugMessage('User: ${tokenDoc.id}');
+            final tokenData = tokenDoc.data();
+            if (tokenData['token'] != null) {
+              _showDebugMessage('  Token: ${tokenData['token'].toString().substring(0, 20)}...');
+            } else {
+              _showDebugMessage('  Token: null');
+            }
           }
         }
       }
@@ -294,18 +304,25 @@ class NotificationService {
     Map<String, dynamic>? data,
   }) async {
     try {
+      _showDebugMessage('📤 Attempting to send notification to partner...');
+      _showDebugMessage('Title: $title');
+      _showDebugMessage('Body: $body');
+      
       if (_partnerToken == null) {
-        print('⚠️ Partner token not available, loading...');
+        _showDebugMessage('⚠️ Partner token not available, loading...');
         await _loadPartnerToken();
       }
 
       if (_partnerToken == null) {
+        _showDebugMessage('❌ Cannot send notification: Partner token not found', isError: true);
         print('❌ Cannot send notification: Partner token not found');
         return;
       }
 
+      _showDebugMessage('✅ Partner token found: ${_partnerToken!.substring(0, 20)}...');
+
       // Send notification using FCM
-      await _firestore.collection('couples').doc('default_couple').collection('notifications').add({
+      final notificationData = {
         'to': _partnerToken,
         'notification': {
           'title': title,
@@ -313,10 +330,16 @@ class NotificationService {
         },
         'data': data ?? {},
         'createdAt': FieldValue.serverTimestamp(),
-      });
+        'from': _currentUserId,
+      };
+      
+      _showDebugMessage('📝 Creating notification document in Firestore...');
+      await _firestore.collection('couples').doc('default_couple').collection('notifications').add(notificationData);
 
+      _showDebugMessage('✅ Notification document created successfully!');
       print('✅ Notification sent to partner');
     } catch (e) {
+      _showDebugMessage('❌ Error sending notification: $e', isError: true);
       print('❌ Error sending notification: $e');
     }
   }

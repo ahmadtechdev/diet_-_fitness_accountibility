@@ -102,10 +102,12 @@ class FoodTrackerController extends GetxController {
         _generateWeeklySummaries();
       });
       
-      // Initial load
-      final entries = await _repository.getAllFoodEntriesOnce();
-      _foodEntries.value = entries;
-      _generateWeeklySummaries();
+      // Initial load - only if no entries yet
+      if (_foodEntries.isEmpty) {
+        final entries = await _repository.getAllFoodEntriesOnce();
+        _foodEntries.value = entries;
+        _generateWeeklySummaries();
+      }
       
     } catch (e) {
       print('Error loading data: $e');

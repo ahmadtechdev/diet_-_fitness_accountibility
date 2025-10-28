@@ -105,10 +105,12 @@ class AccountabilityController extends GetxController {
         _updateFilteredLists();
       });
       
-      // Initial load
-      final entries = await _repository.getAllAccountabilityEntriesOnce();
-      _accountabilityEntries.value = entries;
-      _updateFilteredLists();
+      // Initial load - only if no entries yet
+      if (_accountabilityEntries.isEmpty) {
+        final entries = await _repository.getAllAccountabilityEntriesOnce();
+        _accountabilityEntries.value = entries;
+        _updateFilteredLists();
+      }
       
     } catch (e) {
       print('Error loading accountability data: $e');

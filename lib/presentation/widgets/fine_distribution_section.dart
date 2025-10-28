@@ -379,7 +379,7 @@ class _FineDistributionCardState extends State<_FineDistributionCard> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child:                 Text(
+                child: Text(
                   title,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,

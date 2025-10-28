@@ -99,7 +99,7 @@ class _FoodEntryFormState extends State<FoodEntryForm> {
                     _buildFinePreview(),
                     const SizedBox(height: 32),
                     _buildSaveButton(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 100), // Extra space for keyboard
                   ],
                 ),
               ),

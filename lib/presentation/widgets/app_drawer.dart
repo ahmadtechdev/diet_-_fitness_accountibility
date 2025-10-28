@@ -177,6 +177,14 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 _buildDrawerItem(
+                  icon: Icons.notifications_active,
+                  title: 'Test Notifications',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Get.toNamed(AppRoutes.notify);
+                  },
+                ),
+                _buildDrawerItem(
                   icon: Icons.info,
                   title: 'About',
                   onTap: () {

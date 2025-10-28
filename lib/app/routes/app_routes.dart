@@ -6,6 +6,7 @@ import '../../presentation/views/home_view.dart';
 import '../../presentation/views/splash_view.dart';
 import '../../presentation/views/accountability_view.dart';
 import '../../presentation/views/settings_screen.dart';
+import '../../presentation/views/notify_view.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -15,6 +16,7 @@ class AppRoutes {
   static const String analytics = '/analytics';
   static const String summary = '/summary';
   static const String settings = '/settings';
+  static const String notify = '/notify';
   
   static List<GetPage> routes = [
     GetPage(
@@ -56,6 +58,12 @@ class AppRoutes {
     GetPage(
       name: settings,
       page: () => const SettingsScreen(),
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: notify,
+      page: () => const NotifyView(),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 300),
     ),
