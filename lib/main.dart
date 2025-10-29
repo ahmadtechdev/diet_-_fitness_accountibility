@@ -32,16 +32,16 @@ void main(List<String> args) async {
   final notificationService = NotificationService();
   
   // Check command line arguments or environment for user ID
-  String userId = 'him'; // Default
+  String userId = 'Her'; // Default
   
   // Check for dart-define first
-  const String? userIdFromDefine = String.fromEnvironment('USER_ID');
-  if (userIdFromDefine != null && userIdFromDefine.isNotEmpty) {
+  const String userIdFromDefine = String.fromEnvironment('USER_ID');
+  if (userIdFromDefine.isNotEmpty) {
     userId = userIdFromDefine;
   }
   // Then check command line arguments
   else if (args.isNotEmpty && args[0] == 'her') {
-    userId = 'her';
+    userId = 'Her';
   }
   
   print('🔍 Initializing notification service for user: $userId');

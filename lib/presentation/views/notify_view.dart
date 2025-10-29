@@ -343,7 +343,9 @@ class _NotifyViewState extends State<NotifyView> {
     try {
       final notificationService = NotificationService();
       
-      await notificationService.sendNotificationToPartner(
+      // For testing, send to the selected recipient directly
+      await notificationService.sendTestNotificationToUser(
+        targetUserId: _selectedRecipient,
         title: _titleController.text.trim(),
         body: _bodyController.text.trim(),
         data: {
@@ -424,7 +426,8 @@ class _NotifyViewState extends State<NotifyView> {
           data = {'type': 'test'};
       }
 
-      await notificationService.sendNotificationToPartner(
+      await notificationService.sendTestNotificationToUser(
+        targetUserId: _selectedRecipient,
         title: title,
         body: body,
         data: data,

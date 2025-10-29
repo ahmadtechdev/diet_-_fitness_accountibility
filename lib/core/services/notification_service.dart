@@ -103,6 +103,13 @@ class NotificationService {
       // Listen for foreground messages (when app is open)
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
+      // Clean up duplicate tokens first
+      _showDebugMessage('Cleaning up duplicate tokens...');
+      await cleanupDuplicateTokens();
+
+      // List all available tokens for debugging
+      await listAllTokens();
+
       // Load partner's token
       _showDebugMessage('Looking for partner token...');
       await _loadPartnerToken();
@@ -243,22 +250,70 @@ class NotificationService {
   
   Future<void> _loadPartnerToken() async {
     try {
-      // Determine partner ID (if current user is 'him', partner is 'her' and vice versa)
-      String partnerId = _currentUserId == 'him' ? 'her' : 'him';
+      // Determine partner ID (if current user is 'Him', partner is 'Her' and vice versa)
+      String partnerId = _currentUserId == 'Him' ? 'Her' : 'Him';
+      String partnerIdLower = partnerId.toLowerCase();
       
       _showDebugMessage('Looking for partner: $partnerId');
+      _showDebugMessage('Current user ID: $_currentUserId');
+      _showDebugMessage('Partner ID determined: $partnerId');
       
-      final doc = await _firestore
+      // Try to find partner token with both capital and lowercase versions
+      DocumentSnapshot? doc;
+      
+      // First try with capital case
+      doc = await _firestore
           .collection('couples')
           .doc('default_couple')
           .collection('tokens')
           .doc(partnerId)
           .get();
+          
+      _showDebugMessage('Document exists (capital): ${doc.exists}');
+      
+      // If not found, try with lowercase
+      if (!doc.exists) {
+        doc = await _firestore
+            .collection('couples')
+            .doc('default_couple')
+            .collection('tokens')
+            .doc(partnerIdLower)
+            .get();
+        _showDebugMessage('Document exists (lowercase): ${doc.exists}');
+      }
 
       if (doc.exists) {
-        _partnerToken = doc.data()?['token'] as String?;
+        final data = doc.data() as Map<String, dynamic>?;
+        _showDebugMessage('Document data: $data');
+        _partnerToken = data?['token'] as String?;
         if (_partnerToken != null) {
           _showDebugMessage('✅ Partner token found!');
+          _showDebugMessage('Token length: ${_partnerToken!.length}');
+          
+          // If we found the token with lowercase ID, update it to use capital case
+          if (doc.id == partnerIdLower) {
+            _showDebugMessage('🔄 Updating partner token to use capital case...');
+            try {
+              await _firestore
+                  .collection('couples')
+                  .doc('default_couple')
+                  .collection('tokens')
+                  .doc(partnerId)
+                  .set(data!);
+              _showDebugMessage('✅ Partner token updated to capital case');
+              
+              // Delete the old lowercase entry
+              await _firestore
+                  .collection('couples')
+                  .doc('default_couple')
+                  .collection('tokens')
+                  .doc(partnerIdLower)
+                  .delete();
+              _showDebugMessage('✅ Old lowercase entry deleted');
+            } catch (e) {
+              _showDebugMessage('⚠️ Could not update token case: $e');
+            }
+          }
         } else {
           _showDebugMessage('❌ Partner token document exists but token is null', isError: true);
         }
@@ -290,6 +345,8 @@ class NotificationService {
     } catch (e) {
       _showDebugMessage('❌ Error loading partner token: $e', isError: true);
       print('❌ Error loading partner token: $e');
+      print('❌ Error type: ${e.runtimeType}');
+      print('❌ Stack trace: ${StackTrace.current}');
     }
   }
 
@@ -307,6 +364,8 @@ class NotificationService {
       _showDebugMessage('📤 Attempting to send notification to partner...');
       _showDebugMessage('Title: $title');
       _showDebugMessage('Body: $body');
+      _showDebugMessage('Current user: $_currentUserId');
+      _showDebugMessage('Partner token cached: ${_partnerToken != null ? "Yes" : "No"}');
       
       if (_partnerToken == null) {
         _showDebugMessage('⚠️ Partner token not available, loading...');
@@ -334,13 +393,19 @@ class NotificationService {
       };
       
       _showDebugMessage('📝 Creating notification document in Firestore...');
-      await _firestore.collection('couples').doc('default_couple').collection('notifications').add(notificationData);
-
+      _showDebugMessage('Document path: couples/default_couple/notifications');
+      _showDebugMessage('Notification data: ${notificationData.toString()}');
+      
+      final docRef = await _firestore.collection('couples').doc('default_couple').collection('notifications').add(notificationData);
+      
       _showDebugMessage('✅ Notification document created successfully!');
+      _showDebugMessage('Document ID: ${docRef.id}');
       print('✅ Notification sent to partner');
     } catch (e) {
       _showDebugMessage('❌ Error sending notification: $e', isError: true);
       print('❌ Error sending notification: $e');
+      print('❌ Error type: ${e.runtimeType}');
+      print('❌ Stack trace: ${StackTrace.current}');
     }
   }
 
@@ -376,6 +441,172 @@ class NotificationService {
   
   Future<void> refreshPartnerToken() async {
     await _loadPartnerToken();
+  }
+
+  /// Step 11: Send Test Notification to Specific User
+  /// 
+  /// This method is for testing - sends notification to a specific user ID
+  
+  Future<void> sendTestNotificationToUser({
+    required String targetUserId,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      _showDebugMessage('📤 Sending test notification to user: $targetUserId');
+      _showDebugMessage('Title: $title');
+      _showDebugMessage('Body: $body');
+      
+      // Get the target user's token
+      final doc = await _firestore
+          .collection('couples')
+          .doc('default_couple')
+          .collection('tokens')
+          .doc(targetUserId)
+          .get();
+
+      if (!doc.exists) {
+        _showDebugMessage('❌ Target user token not found: $targetUserId', isError: true);
+        return;
+      }
+
+      final tokenData = doc.data() as Map<String, dynamic>?;
+      final targetToken = tokenData?['token'] as String?;
+      
+      if (targetToken == null) {
+        _showDebugMessage('❌ Target user token is null: $targetUserId', isError: true);
+        return;
+      }
+
+      _showDebugMessage('✅ Target user token found: ${targetToken.substring(0, 20)}...');
+
+      // Send notification using FCM
+      final notificationData = {
+        'to': targetToken,
+        'notification': {
+          'title': title,
+          'body': body,
+        },
+        'data': data ?? {},
+        'createdAt': FieldValue.serverTimestamp(),
+        'from': _currentUserId,
+        'targetUserId': targetUserId,
+      };
+      
+      _showDebugMessage('📝 Creating test notification document in Firestore...');
+      final docRef = await _firestore.collection('couples').doc('default_couple').collection('notifications').add(notificationData);
+      
+      _showDebugMessage('✅ Test notification document created successfully!');
+      _showDebugMessage('Document ID: ${docRef.id}');
+      print('✅ Test notification sent to $targetUserId');
+    } catch (e) {
+      _showDebugMessage('❌ Error sending test notification: $e', isError: true);
+      print('❌ Error sending test notification: $e');
+    }
+  }
+
+  /// Step 12: List All Available Tokens
+  /// 
+  /// This method lists all tokens in the database for debugging
+  
+  Future<void> listAllTokens() async {
+    try {
+      _showDebugMessage('📋 Listing all available tokens...');
+      
+      final allTokens = await _firestore
+          .collection('couples')
+          .doc('default_couple')
+          .collection('tokens')
+          .get();
+      
+      if (allTokens.docs.isEmpty) {
+        _showDebugMessage('No tokens found in database');
+      } else {
+        _showDebugMessage('Found ${allTokens.docs.length} token(s) in database:');
+        for (var tokenDoc in allTokens.docs) {
+          final tokenData = tokenDoc.data();
+          final token = tokenData['token'] as String?;
+          final userId = tokenData['userId'] as String?;
+          _showDebugMessage('  User ID: ${tokenDoc.id}');
+          _showDebugMessage('  Stored User ID: $userId');
+          if (token != null) {
+            _showDebugMessage('  Token: ${token.substring(0, 20)}...');
+          } else {
+            _showDebugMessage('  Token: null');
+          }
+          _showDebugMessage('  ---');
+        }
+      }
+    } catch (e) {
+      _showDebugMessage('❌ Error listing tokens: $e', isError: true);
+    }
+  }
+
+  /// Step 13: Clean Up Duplicate Tokens
+  /// 
+  /// This method cleans up old lowercase token entries and ensures consistency
+  
+  Future<void> cleanupDuplicateTokens() async {
+    try {
+      _showDebugMessage('🧹 Cleaning up duplicate tokens...');
+      
+      final allTokens = await _firestore
+          .collection('couples')
+          .doc('default_couple')
+          .collection('tokens')
+          .get();
+      
+      if (allTokens.docs.isEmpty) {
+        _showDebugMessage('No tokens found to clean up');
+        return;
+      }
+      
+      _showDebugMessage('Found ${allTokens.docs.length} token(s) to check');
+      
+      // Group tokens by their lowercase version
+      Map<String, List<QueryDocumentSnapshot>> tokenGroups = {};
+      for (var doc in allTokens.docs) {
+        String lowerId = doc.id.toLowerCase();
+        if (!tokenGroups.containsKey(lowerId)) {
+          tokenGroups[lowerId] = [];
+        }
+        tokenGroups[lowerId]!.add(doc);
+      }
+      
+      // Process each group
+      for (String lowerId in tokenGroups.keys) {
+        List<QueryDocumentSnapshot> docs = tokenGroups[lowerId]!;
+        
+        if (docs.length > 1) {
+          _showDebugMessage('Found ${docs.length} duplicate(s) for $lowerId');
+          
+          // Find the one with capital case (preferred)
+          QueryDocumentSnapshot? capitalDoc;
+          QueryDocumentSnapshot? lowercaseDoc;
+          
+          for (var doc in docs) {
+            if (doc.id == lowerId.toUpperCase().substring(0, 1) + lowerId.substring(1)) {
+              capitalDoc = doc;
+            } else {
+              lowercaseDoc = doc;
+            }
+          }
+          
+          // If we have both, keep the capital one and delete the lowercase
+          if (capitalDoc != null && lowercaseDoc != null) {
+            _showDebugMessage('Keeping capital case: ${capitalDoc.id}, deleting: ${lowercaseDoc.id}');
+            await lowercaseDoc.reference.delete();
+            _showDebugMessage('✅ Deleted duplicate: ${lowercaseDoc.id}');
+          }
+        }
+      }
+      
+      _showDebugMessage('✅ Token cleanup completed');
+    } catch (e) {
+      _showDebugMessage('❌ Error cleaning up tokens: $e', isError: true);
+      print('❌ Error cleaning up tokens: $e');
+    }
   }
 }
 

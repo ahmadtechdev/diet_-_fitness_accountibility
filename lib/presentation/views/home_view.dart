@@ -528,7 +528,7 @@ class HomeView extends StatelessWidget {
     
     // Get current user ID from environment
     const String? userIdFromDefine = String.fromEnvironment('USER_ID');
-    String userId = userIdFromDefine ?? 'him';
+    String userId = userIdFromDefine ?? 'Him';
     
     Get.snackbar(
       '🔍 Debug Info',

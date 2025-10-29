@@ -8,6 +8,12 @@ import '../views/comprehensive_analytics_view.dart';
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
+  String _getCurrentUserId() {
+    // Get current user ID from environment
+    const String? userIdFromDefine = String.fromEnvironment('USER_ID');
+    return userIdFromDefine ?? 'Him';
+  }
+
   @override
   Widget build(BuildContext context) {
     // Safely get the accountability controller, return default values if not found
@@ -72,6 +78,7 @@ class AppDrawer extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
+
                   ],
                 ),
               ),
